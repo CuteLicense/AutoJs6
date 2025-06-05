@@ -16,12 +16,11 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import org.autojs.autojs.theme.ThemeColorHelper;
 import org.autojs.autojs.tool.MapBuilder;
 import org.autojs.autojs.ui.enhancedfloaty.ResizableExpandableFloatyWindow;
 import org.autojs.autojs.ui.log.LogActivity;
@@ -134,7 +133,7 @@ public class ConsoleView extends FrameLayout implements ConsoleImpl.LogListener 
         initSubmitButton();
 
         if (isExcludeFromNavigationBar) {
-            ViewUtils.excludePaddingClippableViewFromNavigationBar(mLogListRecyclerView);
+            ViewUtils.excludePaddingClippableViewFromBottomNavigationBar(mLogListRecyclerView);
         }
     }
 
@@ -400,6 +399,7 @@ public class ConsoleView extends FrameLayout implements ConsoleImpl.LogListener 
             TextView textView = holder.textView;
             ConsoleImpl.LogEntry logEntry = mLogEntries.get(position);
             textView.setText(logEntry.content);
+            ThemeColorHelper.setThemeColorPrimary(textView, true);
             Integer color = mColors.get(logEntry.level);
             if (color != null) {
                 textView.setTextColor(color);

@@ -25,6 +25,7 @@ import org.autojs.autojs6.R
  */
 abstract class BaseActivity : AppCompatActivity() {
 
+    open val handleContentViewFromHorizontalNavigationBarAutomatically = true
     open val handleStatusBarThemeColorAutomatically = true
     open val handleNavigationBarContrastEnforcedAutomatically = true
 
@@ -36,10 +37,13 @@ abstract class BaseActivity : AppCompatActivity() {
         @Suppress("DEPRECATION")
         ViewUtils.appendSystemUiVisibility(this, SYSTEM_UI_FLAG_LAYOUT_STABLE or SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
 
+        if (handleContentViewFromHorizontalNavigationBarAutomatically) {
+            ViewUtils.excludeContentViewFromHorizontalNavigationBar(this)
+        }
+
         if (handleNavigationBarContrastEnforcedAutomatically) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                @Suppress("DEPRECATION")
-                window.navigationBarColor = getColor(R.color.black_alpha_44)
+                ViewUtils.setNavigationBarBackgroundColor(this, getColor(R.color.black_alpha_44))
             }
         }
 
@@ -49,7 +53,7 @@ abstract class BaseActivity : AppCompatActivity() {
             initThemeColors()
             if (handleStatusBarThemeColorAutomatically) {
                 ThemeColorManager.setStatusBarBackgroundColor(this)
-                setUpStatusBarAppearanceLightByThemeColor()
+                setUpStatusBarIconLightByThemeColor()
             }
         }
 
@@ -76,7 +80,7 @@ abstract class BaseActivity : AppCompatActivity() {
         initThemeColors()
         if (handleStatusBarThemeColorAutomatically) {
             ThemeColorManager.addActivityStatusBar(this)
-            setUpStatusBarAppearanceLightByThemeColor()
+            setUpStatusBarIconLightByThemeColor()
         }
     }
 
@@ -93,12 +97,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun setToolbarAsBack(title: String?) = ViewUtils.setToolbarAsBack(this, title)
 
-    protected fun setUpStatusBarAppearanceLightByNightMode() {
-        ViewUtils.setStatusBarAppearanceLight(this, ViewUtils.isNightModeEnabled)
+    protected fun setUpStatusBarIconLightByNightMode() {
+        ViewUtils.setStatusBarIconLight(this, ViewUtils.isNightModeEnabled)
     }
 
-    protected fun setUpStatusBarAppearanceLightByThemeColor() {
-        ThemeColorManager.setStatusBarAppearanceLight(this)
+    protected fun setUpStatusBarIconLightByThemeColor() {
+        ThemeColorManager.setStatusBarIconLight(this)
     }
 
 }

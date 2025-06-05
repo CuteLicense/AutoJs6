@@ -9,6 +9,7 @@ import android.webkit.WebView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import org.autojs.autojs.event.BackPressedHandler
+import org.autojs.autojs.ui.doc.DocumentationActivity.Companion.generateInjectCodeForBottomInsets
 import org.autojs.autojs.ui.fragment.BindingDelegates.viewBinding
 import org.autojs.autojs.ui.main.MainActivity
 import org.autojs.autojs.ui.main.QueryEvent
@@ -59,7 +60,9 @@ class DocumentationFragment : ViewPagerFragment(ROTATION_GONE), BackPressedHandl
                 if (ViewUtils.isNightModeYes(requireContext())) {
                     WebViewUtils.adaptDarkMode(webView)
                 }
-                WebViewUtils.excludeWebViewFromNavigationBar(ewebView, webView)
+                WebViewUtils.excludeWebViewFromNavigationBar(ewebView, webView) {
+                    generateInjectCodeForBottomInsets(it)
+                }
             }
         }
         restoreViewStates()

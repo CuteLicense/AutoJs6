@@ -4,6 +4,90 @@
 
 ******
 
+# v6.6.4
+
+###### 2025/05/31
+
+* `提示` API 变更: ui.(status/navigation)BarAppearanceLight[By] -> ui.(status/navigation)BarIconLight[By]
+* `新增` util.dpToPx/spToPx/pxToDp/pxToSp 方法, 用于像素单位转换
+* `修复` 屏幕旋转至横向时子标题可能显示不完整的问题
+* `修复` 屏幕旋转至横向时部分页面内容被侧边导航栏遮挡的问题
+* `修复` Android 15 部分页面状态栏背景着色区域不完整的问题 _[`issue #398`](http://issues.autojs6.com/398)_
+* `修复` 代码编辑器可能使用置信度不足的编码写入文件导致内容解码异常的问题 (试修)
+* `优化` 关于应用与开发者页面增加布局适配通用性并去除不必要的布局分类
+* `优化` README.md 项目编译构建小节添加多种方式便于定位目标设置页面 _[`issue #404`](http://issues.autojs6.com/404)_
+* `依赖` 附加 Androidx ConstraintLayout 版本 2.2.1
+
+# v6.6.3
+
+###### 2025/05/27
+
+* `新增` 版本历史功能, 可查看发行版本历史更新记录 (多语言) 与统计数据
+* `新增` timers.keepAlive 方法 (已全局化), 用于保持脚本活跃状态
+* `新增` engines.on('start/stop/error', callback) 等事件监听方法, 用于监听脚本引擎全局事件
+* `新增` images.detectMultiColors 方法, 用于多点颜色校验 _[`issue #374`](http://issues.autojs6.com/374)_
+* `新增` images.matchFeatures/detectAndComputeFeatures 方法, 支持全分辨率找图 (Ref to [Auto.js Pro](https://g.pro.autojs.org/)) _[`issue #366`](http://issues.autojs6.com/366)_
+* `新增` images.compressToBytes 方法, 用于压缩图像并生成字节数组
+* `新增` images.downsample 方法, 用于像素降采样并生成新的 ImageWrapper
+* `新增` ui.keepScreenOn 方法, 用于 UI 页面获取焦点时保持设备屏幕常亮
+* `新增` ui.root 属性 (getter), 用于获取 UI 页面布局的 "窗口内容根容器" 节点
+* `新增` webview 元素支持基于 JsBridge 的 Web 页面布局 (Ref to [Auto.js Pro](https://g.pro.autojs.org/)) [参阅 示例代码 > 布局 > 可交互 HTML / Vue2 + Vant (SFC)] _[`issue #281`](http://issues.autojs6.com/281)_
+* `修复` 主页文档标签及文档活动页面显示在线文档时部分内容被系统导航栏遮挡的问题
+* `修复` 部分页面 Toolbar 点击按钮时可能导致标题点击事件误触发的问题
+* `修复` 部分设备代码编辑器空行显示方框字符的问题
+* `修复` 主题色设置页面调色盘对话框可能无限叠加的问题
+* `修复` 无障碍服务关闭时音量加键停止所有脚本功能失效的问题
+* `修复` 定时任务页面编辑自定义广播内容时出现的输入法遮挡问题
+* `修复` webview 元素中的控件无法正常激活输入法软键盘的问题
+* `修复` APK 文件类型信息对话框可能无法获取应用名称及 SDK 信息的问题
+* `修复` 文件管理器示例代码进入项目目录时可能无法自动加载子目录文件内容的问题
+* `修复` Android 15 UI 模式顶部内容被状态栏覆盖的问题
+* `修复` Android 15 部分页面状态栏背景颜色可能无法动态跟随主题色的问题
+* `修复` dialogs 模块无法正常使用 customView 属性的问题 _[`issue #364`](http://issues.autojs6.com/364)_
+* `修复` dialogs.input 方法的表达式参数可能无法获得执行结果的问题
+* `修复` 使用 JavaAdapter 时导致 ClassLoader 调用栈溢出的问题 _[`issue #376`](http://issues.autojs6.com/376)_
+* `修复` console.setContentTextColor 方法导致日志字体颜色丢失默认值的问题 _[`issue #346`](http://issues.autojs6.com/346)_
+* `修复` console.setContentBackgroundColor 方法无法接受颜色名称参数的问题 _[`issue #384`](http://issues.autojs6.com/384)_
+* `修复` images.compress 方法实现原理由像素降采样修正为编码质量变化
+* `修复` images.resize 方法无法正常使用的问题
+* `修复` engines.all 方法可能触发 ConcurrentModificationException 的问题 _[`issue #394`](http://issues.autojs6.com/394)_
+* `修复` README.md 中部分语言日期格式不正确的问题
+* `修复` Gradle 构建脚本可能因获取到无效库档案文件长度而导致构建失败的问题 _[`issue #389`](http://issues.autojs6.com/389)_
+* `优化` 布局分析支持控件隐藏 (by [TonyJiangWJ](https://github.com/TonyJiangWJ)) _[`pr #371`](http://pr.autojs6.com/371)_ _[`issue #355`](http://issues.autojs6.com/355)_
+* `优化` 布局分析菜单添加渐变分隔线实现一定程度的功能分组
+* `优化` 脚本项目配置文件 project.json 支持 permissions 选项 (by [wirsnow](https://github.com/wirsnow)) _[`pr #391`](http://pr.autojs6.com/391)_ _[`issue #362`](http://issues.autojs6.com/362)_
+* `优化` 打包单文件时自动读取并勾选已安装应用的声明权限 _[`issue #362`](http://issues.autojs6.com/362)_
+* `优化` 主题色扩充适配范围并支持更多控件类型
+* `优化` 主页抽屉在横向屏幕或超宽屏幕的宽度适应性
+* `优化` 关于应用与开发者页面增加水平布局及小屏布局适配
+* `优化` 设置页面对话框相关设置支持 "使用默认值" 菜单选项
+* `优化` 文件管理器浮动按钮展开后点击其他区域可自动隐藏
+* `优化` 代码编辑器格式化代码支持 `??`, `?.`, `??=` 等运算符
+* `优化` 代码编辑器支持 GB18030 / UTF-16 (LE/BE) / Shift_JIS 等编码的文件读写
+* `优化` 代码编辑器支持显示文件详细信息 (路径/编码/换行符/字节及字符总数等) _[`issue #395`](http://issues.autojs6.com/395)_
+* `优化` 意图相关操作 (编辑/查看/安装/发送/播放等) 增加操作异常提示
+* `优化` webview 元素的 url 属性支持相对路径
+* `优化` ImageWrapper#saveTo 方法的路径参数支持相对路径
+* `优化` images.save 方法使用 quality 参数时支持 png 格式的文件体积压缩 _[`issue #367`](http://issues.autojs6.com/367)_
+* `优化` 已忽略更新记录及客户端模式连接地址记录支持清空操作
+* `优化` 版本更新信息支持多语言显示 (与当前显示语言同步)
+* `优化` 使用异步加载方式一定程度提升文件管理器列表滑动流畅性
+* `优化` 脚本异常消息在控制台的显示内容与格式
+* `优化` 示例代码支持将文件夹重置为初始内容
+* `优化` APK 文件签名信息提升检测效率
+* `优化` APK 文件类型信息及媒体文件类型信息优化对话框显示效率及信息展示逻辑
+* `优化` Gradle 构建脚本提升版本自适应能力 _[`discussion #369`](http://discussions.autojs6.com/369)_
+* `依赖` 本地化 Material Dialogs 版本 0.9.6.0
+* `依赖` 本地化 Material Date Time Picker 版本 4.2.3
+* `依赖` 本地化 libimagequant 版本 2.17.0
+* `依赖` 本地化 libpng 版本 1.6.49
+* `依赖` 附加 ICU4J 版本 77.1
+* `依赖` 附加 Jsoup 版本 1.19.1
+* `依赖` 附加 Material Progressbar 版本 1.4.2
+* `依赖` 附加 Flexmark Java HTML to Markdown 版本 0.64.8
+* `依赖` 升级 Gradle 版本 8.14-rc-1 -> 8.14
+* `依赖` 升级 Androidx Room 版本 2.7.0 -> 2.7.1
+
 # v6.6.2
 
 ###### 2025/04/16
@@ -24,6 +108,7 @@
 * `修复` floaty.window/floaty.rawWindow 无法在子线程执行的问题
 * `修复` floaty.getClip 可能无法正常获取剪切板内容的问题 _[`issue #341`](http://issues.autojs6.com/341)_
 * `修复` ui.inflate 返回值丢失 attr/on/click 等原型方法的问题
+* `修复` 使用 XML 语法将 JavaScript 表达式作为属性值时, 其作用域上下文绑定错误的问题 _[`issue #319`](http://issues.autojs6.com/319)_
 * `修复` 部分方法调用出现异常时无法被 try..catch 块捕获的问题 _[`issue #345`](http://issues.autojs6.com/345)_
 * `修复` 布局分析页面生成代码时可能导致应用崩溃的问题 _[`issue #288`](http://issues.autojs6.com/288)_
 * `修复` 打包应用无法正常使用 shizuku 模块的问题 _[`issue #227`](http://issues.autojs6.com/227)_ _[`issue #231`](http://issues.autojs6.com/231)_ _[`issue #284`](http://issues.autojs6.com/284)_ _[`issue #287`](http://issues.autojs6.com/287)_ _[`issue #304`](http://issues.autojs6.com/304)_

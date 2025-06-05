@@ -18,6 +18,11 @@
     <string name="apk_info_target_sdk">Target SDK</string>
     <string name="blocking_operations_cannot_be_performed_on_the_ui_thread_for_waitforactivity_with_solution">Blocking operations cannot be performed on the UI thread. Try executing waitForActivity in a sub-thread or sub-script, or use setInterval to loop and check the activity</string>
     <string name="blocking_operations_cannot_be_performed_on_the_ui_thread_for_waitforpackage_with_solution">Blocking operations cannot be performed on the UI thread. Try executing waitForPackage in a sub-thread or sub-script, or use setInterval to loop and check the package</string>
+    <string name="changelog_label_dependency">Dependency</string>
+    <string name="changelog_label_feature">Feature</string>
+    <string name="changelog_label_fix">Fix</string>
+    <string name="changelog_label_hint">Hint</string>
+    <string name="changelog_label_improvement">Improvement</string>
     <string name="color_library_android_colors">Android color library</string>
     <string name="color_library_css_colors">CSS color library</string>
     <string name="color_library_default_colors">Default color library</string>
@@ -48,6 +53,7 @@
     <string name="content_description_fab_for_display_manifest">A Floating Action Button widget for displaying the manifest</string>
     <string name="content_failed_to_determine_index_of_theme_color_item">Failed to determine the index of the theme color item</string>
     <string name="content_failed_to_locate_library_for_theme_color">Failed to locate the color library for the theme color</string>
+    <string name="content_failed_to_retrieve_released_notes_of_current_language_with_zh_hans_fallback">Failed to retrieve the release notes for the currently displayed language. Please try again later.\n\nCurrently, the release notes for \"简体中文 (zh-Hans)\" are temporarily displayed.</string>
     <string name="content_github_feedback">A web page will be launched to report an issue.\nAn account for GitHub may be needed.</string>
     <string name="content_way_of_output_for_recorded_script">Select a way of output for recorded script</string>
     <string name="crash_feedback">Copy debugging log or exit directly</string>
@@ -61,7 +67,7 @@
     <string name="description_about_app_tips_preference">1. Press and hold the app icon on the \"About app and developer\" page to jump to AutoJs6 developer options page</string>
     <string name="description_app_language_preference">Preference for changing the display language of AutoJs6, including exception messages from running scripts.\n\nNote: an app restart may be needed to make language applied as expected.</string>
     <string name="description_change_working_dir_preference">Change the path of the directory containing scripts</string>
-    <string name="description_check_for_updates_preference">AutoJs6 gets and downloads updates from GitHub.\n\nNote: The update does not provide multilingual support yet.</string>
+    <string name="description_check_for_updates_preference">AutoJs6 gets and downloads updates from GitHub.</string>
     <string name="description_documentation_source_preference">Local docs: Using AutoJs6 build-in files as documentation sources, no network connection required. The content changes as AutoJs6 is updated.\nOnline docs: Using GitHub pages as documentation sources, requiring network connection. The content is always up to date.\n\nNote: To maximize the reading experience of online documents, it is recommended to use a widescreen display device such as a desktop monitor.\nNote: As of version 6.2.0, the documentation is still in the preliminary stages of development, and most of the content has not yet been written or updated.</string>
     <string name="description_documentation_source_preference_more">The following conditions must be met for dark theme support on document pages:\n1. AutoJs6 has night mode enabled\n2. Android System WebView (or browsers like Google Chrome):\n- Android API Level 29 (Android 10) [Q] and above: version >= 76\n- Android API Level 28 (Android 9) [P] and below: version >= 105</string>
     <string name="description_extending_js_build_in_objects">Extending JavaScript built-in objects can increase code flexibility and enable richer functionality, but can cause conflicts and even breakage.\nAll scripts have built-in extensions enabled by default when the option is turned on.\nBuilt-in extensions are often insecure, and are not recommended unless the principles and risks of built-in extensions are clearly understood.\nWhen the option is turned off, built-in extensions can still be enabled through the plugins global object, as described in the project documentation.</string>
@@ -76,6 +82,7 @@
     <string name="description_root_record_out_file_type_preference">Binary type: non-editable, with the file extension \"auto\"\nJavaScript type: can be edited or copied directly, with the file extension \"js\"</string>
     <string name="description_stable_mode">Stable mode makes it more stable when getting layout bounds, but some results may be ignored.\nA11y service\'s restart required.</string>
     <string name="description_theme_color_preference">Theme color is applied to widgets including but not limited to the following ones:\nStatus bar\nAppbar\nFile icon\nTask item icon\nFab\nSettings category title\nSwitch button\n\nNote: As of AutoJs6 version 6.2.0, there has been no difference between primary color, primary dark color and accent color yet.</string>
+    <string name="description_version_histories_preference">View the release version history and key category statistics of AutoJs6 on GitHub.</string>
     <string name="dialog_button_back">@string/text_back</string>
     <string name="dialog_button_cancel">Cancel</string>
     <string name="dialog_button_cancel_download">Cancel</string>
@@ -102,12 +109,20 @@
     <string name="dialog_button_update_now">Update</string>
     <string name="dialog_button_use_default">Use default</string>
     <string name="dialog_button_use_palette">Use palette</string>
+    <string name="dialog_button_version_histories">Histories</string>
     <string name="dialog_button_view_file">View File</string>
     <string name="dialog_title_color_details">Color details</string>
     <string name="dialog_title_color_palette">Color palette</string>
     <string name="dialog_title_theme_color_details">Theme color details</string>
     <string name="edit_and_run_handle_intent_error">Cannot process file</string>
     <string name="edit_exit_without_save_warn">The content has not been saved, are you sure to exit?</string>
+    <string name="editable_file_info_byte_count_label">Bytes</string>
+    <string name="editable_file_info_char_count_label">Chars</string>
+    <string name="editable_file_info_file_charset_label">Charset</string>
+    <string name="editable_file_info_file_path_label">Path</string>
+    <string name="editable_file_info_file_size_label">Size</string>
+    <string name="editable_file_info_line_break_label">EOL</string>
+    <string name="editable_file_info_line_count_label">Lines</string>
     <string name="entry_app_language_auto">Follow system</string>
     <string name="entry_documentation_source_local">Local docs</string>
     <string name="entry_documentation_source_online">Online docs</string>
@@ -174,8 +189,10 @@
     <string name="error_failed_to_grant_shizuku_access">Failed to grant Shizuku access</string>
     <string name="error_failed_to_instantiate">Failed to instantiate "%s"</string>
     <string name="error_failed_to_instantiate_with_cause"><![CDATA[Failed to instantiate "%1$s": [ %2$s ]]]></string>
-    <string name="error_failed_to_invoke_method_with_description">Failed to invoke method %1$s</string>
     <string name="error_failed_to_render_content">Failed to render content</string>
+    <string name="error_failed_to_retrieve_released_notes">Failed to retrieve release notes</string>
+    <string name="error_failed_to_retrieve_version_histories">Failed to retrieve version histories</string>
+    <string name="error_failed_to_retrieve_version_properties_file_to_parse_version_information">Failed to retrieve version.properties to parse version information</string>
     <string name="error_failed_to_revoke_shizuku_access">Failed to revoke Shizuku access</string>
     <string name="error_failed_to_run_script">Failed to run script</string>
     <string name="error_file_in_path_does_not_exist">File in path \"%1$s\" does not exist</string>
@@ -208,6 +225,12 @@
     <string name="error_no_accessibility_permission">Accessibility service is disabled and the script has stopped</string>
     <string name="error_no_accessibility_permission_to_capture">Accessibility service is not activated</string>
     <string name="error_no_accessibility_service">No accessibility service</string>
+    <string name="error_no_applications_available_for_browsing_this_link">No applications available for browsing this link</string>
+    <string name="error_no_applications_available_for_editing_this_file">No applications available for editing this file</string>
+    <string name="error_no_applications_available_for_installing_this_file">No applications available for installing this file</string>
+    <string name="error_no_applications_available_for_playing_this_file">No applications available for playing this file</string>
+    <string name="error_no_applications_available_for_sending_this_file">No applications available for sending this file</string>
+    <string name="error_no_applications_available_for_viewing_this_file">No applications available for viewing this file</string>
     <string name="error_no_display_over_other_apps_permission">No \"display over other apps\" permission</string>
     <string name="error_no_permission_to_access_shizuku">No permission to access Shizuku</string>
     <string name="error_no_post_notifications_permission">No \"post notifications\" permission</string>
@@ -228,6 +251,7 @@
     <string name="error_repeated_colon_symbol">Repeated colon symbol</string>
     <string name="error_repeated_dot_symbol">Repeated dot symbol</string>
     <string name="error_required_property_is_nullish_or_does_not_exist">Required property \"%1$s\" is nullish or does not exist</string>
+    <string name="error_resolved_path_for_a_relative_path_cannot_be_null">Resolved path for \"%1$s\" cannot be null</string>
     <string name="error_script_is_on_exiting">Script is on exiting</string>
     <string name="error_selector_method_without_calling">Selector method should be called rather than passed as a parameter: %s</string>
     <string name="error_selector_result_type_with_compass">Cannot use a compass when result type is selector</string>
@@ -249,6 +273,7 @@
     <string name="error_unknown_picker_result_type_with_params" formatted="false">Unknown result type {name: %s, params: %s}</string>
     <string name="error_unknown_picker_selector_type" formatted="false">Unknown selector {name: %s, type: %s}</string>
     <string name="error_unknown_type">Unknown type: %s</string>
+    <string name="error_webp_lossless_quality_not_supported">Format WebP-Lossless cannot be compressed with a quality parameter, use JPEG/PNG/WebP-Lossy instead</string>
     <string name="file_not_exist_or_readable">File does not exist or readable: %s</string>
     <string name="foreground_notification_channel_name">AutoJs6 foreground service</string>
     <string name="foreground_notification_text">Click to launch AutoJs6</string>
@@ -263,6 +288,25 @@
     <string name="hint_loop_delay">Delay before loop</string>
     <string name="hint_loop_times">0 for infinite loop</string>
     <string name="label_latest_used_time">Latest used: %1$s</string>
+    <string name="logger_ver_history_blob_thread_failure">\"Blob\" thread request failed</string>
+    <string name="logger_ver_history_blob_thread_success">\"Blob\" thread request successful, writing offline cache</string>
+    <string name="logger_ver_history_data_loaded">Data loaded</string>
+    <string name="logger_ver_history_initial_content_chosen">Chosen initial content</string>
+    <string name="logger_ver_history_insert_new_entries">Inserting new entries</string>
+    <string name="logger_ver_history_load_local_data">Loading local data</string>
+    <string name="logger_ver_history_local_asset_file">Local asset file</string>
+    <string name="logger_ver_history_local_asset_latest">Local asset file is latest version</string>
+    <string name="logger_ver_history_local_data_empty">Local data is empty</string>
+    <string name="logger_ver_history_local_data_newer_stop_online">Local data is newer, stop analyzing online data</string>
+    <string name="logger_ver_history_no_processing_needed">No processing needed</string>
+    <string name="logger_ver_history_offline_cache_file">Offline cache file</string>
+    <string name="logger_ver_history_offline_cache_latest">Offline cache file is latest version</string>
+    <string name="logger_ver_history_overwrite_date">Overwriting date content</string>
+    <string name="logger_ver_history_overwrite_update_record">Overwriting update record</string>
+    <string name="logger_ver_history_raw_thread_failure">\"Raw\" thread request failed</string>
+    <string name="logger_ver_history_raw_thread_success">\"Raw\" thread request successful, writing offline cache</string>
+    <string name="logger_ver_history_start_blob_thread">Starting \"blob\" fallback request thread</string>
+    <string name="logger_ver_history_start_raw_thread">Starting \"raw\" request thread</string>
     <string name="media_info_album_label">Album</string>
     <string name="media_info_aspect_ratio_label">Aspect ratio</string>
     <string name="media_info_audio_format_label">Audio</string>
@@ -303,6 +347,7 @@
     <string name="summary_text_launcher_shortcuts">Add shortcuts to launcher</string>
     <string name="summary_use_volume_control_record">Start or stop recording controlled by “Volume Down” key when floating button is showing</string>
     <string name="summary_use_volume_key_to_stop_running_scripts">Press \"Volume Up\" key to stop all running scripts</string>
+    <string name="summary_version_histories_preference">View release version history and statistics</string>
     <string name="text_a11y_service">Accessibility service</string>
     <string name="text_a11y_service_description">Required by the script automatic operation (click, long press, slide, etc.).</string>
     <string name="text_a11y_service_enabled_but_not_running">Accessibility service enabled but not running (Re-enable or reboot the device)</string>
@@ -315,6 +360,7 @@
     <string name="text_about_functions_feedback">Feedback</string>
     <string name="text_about_functions_licenses">Licenses</string>
     <string name="text_about_functions_update">Update</string>
+    <string name="text_about_functions_version_histories">@string/text_version_histories</string>
     <string name="text_access_has_been_granted">Access has been granted</string>
     <string name="text_act_by_click">Click (click)</string>
     <string name="text_act_by_long_click">Long click (longClick)</string>
@@ -332,6 +378,7 @@
     <string name="text_all_files_access_is_needed">\"All files access\" is needed to access script files on the phone</string>
     <string name="text_all_histories">All histories</string>
     <string name="text_all_histories_cleared">All histories have been cleared</string>
+    <string name="text_all_items_cleared">All items have been cleared</string>
     <string name="text_already_copied_to_clip">Copied to clipboard</string>
     <string name="text_already_copied_to_clip_but_only_latest_few_items">Already copied to clipboard (only latest %d items)</string>
     <string name="text_already_created">Created</string>
@@ -404,8 +451,12 @@
     <string name="text_captured_window_info_type_of_split_screen_divider">Split Screen Divider</string>
     <string name="text_captured_window_info_type_of_system">System</string>
     <string name="text_captured_window_info_type_unknown">Unknown type</string>
+    <string name="text_category_filter">Category filter</string>
     <string name="text_change_working_dir">Change working directory</string>
+    <string name="text_changelog_item_dependency">Some dependency or local library version adjustments</string>
     <string name="text_check_for_updates">Check for updates</string>
+    <string name="text_check_for_updates_while_ignoring_the_local_version">Check for updates (ignore the local version)</string>
+    <string name="text_check_for_updates_while_ignoring_the_local_version_description">Fetch the latest remote version directly when checking for updates</string>
     <string name="text_checking_update" tools:ignore="TypographyEllipsis">Checking for updates...</string>
     <string name="text_city_or_locality">City or Locality</string>
     <string name="text_class_or_package_name">Class / Package name</string>
@@ -422,13 +473,16 @@
     <string name="text_close_floating_button">Close floating button</string>
     <string name="text_code">Code</string>
     <string name="text_code_beautify">Beautify code</string>
+    <string name="text_collapse_all">Collapse all</string>
     <string name="text_color_library">Color library</string>
     <string name="text_color_palette">Color palette</string>
     <string name="text_command_already_copied_to_clip">Command copied to clipboard</string>
     <string name="text_comment">Comment</string>
     <string name="text_compatibility">Compatibility</string>
+    <string name="text_confidence_level">Confidence</string>
     <string name="text_config">Config</string>
     <string name="text_confirm_to_clear_all_histories">Are you sure to clear all histories?</string>
+    <string name="text_confirm_to_clear_all_items">Are you sure to clear all items?</string>
     <string name="text_confirm_to_clear_histories_of">All histories below will be cleared\n\n[ %1$s ]\n\nAre you sure to clear them all?</string>
     <string name="text_confirm_to_clear_histories_of_all_color_libraries">All histories below will be cleared\n\n[ All color libraries ]\n\nAre you sure to clear them all?</string>
     <string name="text_confirm_to_delete">Are you sure to delete?</string>
@@ -478,6 +532,7 @@
     <string name="text_device_model">Device model</string>
     <string name="text_device_name">Device name</string>
     <string name="text_device_product_name">Device product name</string>
+    <string name="text_device_screen_resolution">Device screen resolution</string>
     <string name="text_directly_download">Download now</string>
     <string name="text_directory">Directory</string>
     <string name="text_display_over_other_app">Display over other apps</string>
@@ -515,11 +570,13 @@
     <string name="text_error">Error</string>
     <string name="text_error_copy_file" formatted="true">Failed to copy file: %s</string>
     <string name="text_error_report">Bug report</string>
+    <string name="text_estimated">Estimated</string>
     <string name="text_execute">Execute</string>
     <string name="text_execute_code">Execute code</string>
     <string name="text_execution_finished" formatted="false">[%s] finished in %s seconds.\n</string>
     <string name="text_exit">Exit</string>
     <string name="text_exit_directly">Exit</string>
+    <string name="text_expand_all">Expand all</string>
     <string name="text_export">Export</string>
     <string name="text_exported">Exported</string>
     <string name="text_extending_js_build_in_objects">Extending JavaScript build-in objects</string>
@@ -548,6 +605,7 @@
     <string name="text_failed_to_send_log_entries">Failed to send log entries</string>
     <string name="text_failed_to_write_file">Failed to write file</string>
     <string name="text_file">File</string>
+    <string name="text_file_details">File details</string>
     <string name="text_file_exists">File already exists</string>
     <string name="text_file_explorer">File explorer</string>
     <string name="text_file_extensions_title">File extensions</string>
@@ -586,6 +644,8 @@
     <string name="text_hidden_files_title">Hidden files and folders</string>
     <string name="text_hide">Hide</string>
     <string name="text_hide_button">Hide button</string>
+    <string name="text_hide_node">Hide this node</string>
+    <string name="text_hide_same_frame_nodes">Hide same frame nodes</string>
     <string name="text_histories">Histories</string>
     <string name="text_icon">Icon</string>
     <string name="text_ignore_battery_optimizations">Ignore battery optimizations</string>
@@ -629,6 +689,7 @@
     <string name="text_launcher_shortcuts">Launcher shortcuts</string>
     <string name="text_layout_inspector_is_dumping" tools:ignore="TypographyEllipsis">Inspecting layout...</string>
     <string name="text_licenses">Open Sources Licenses</string>
+    <string name="text_loading_a_fallback_solution_with_dots" tools:ignore="TypographyEllipsis">Trying a fallback solution...</string>
     <string name="text_loading_with_dots" tools:ignore="TypographyEllipsis">Loading...</string>
     <string name="text_locate_current_theme_color">Locate current theme color</string>
     <string name="text_log">Log</string>
@@ -794,6 +855,8 @@
     <string name="text_please_choose">Please choose</string>
     <string name="text_please_choose_a_script">Choose a script</string>
     <string name="text_please_input_name">Input name</string>
+    <string name="text_please_wait" tools:ignore="TypographyEllipsis">Please wait...</string>
+    <string name="text_please_wait_a_moment_before_trying_again" tools:ignore="TypographyEllipsis">Please wait a moment before trying again...</string>
     <string name="text_pointer_location">Pointer location</string>
     <string name="text_pointer_location_toggle_failed_with_hint">Toggle \"pointer location\" failed.\nRoot access is required.</string>
     <string name="text_post_notifications_permission">Post notifications</string>
@@ -805,6 +868,7 @@
     <string name="text_press_again_to_exit">Press again to exit</string>
     <string name="text_press_back_or_vol_down_to_close_window">To close, press \"Back\" or \"Volume Down\"</string>
     <string name="text_preview">Preview</string>
+    <string name="text_process_log">Process log</string>
     <string name="text_processing">Processing</string>
     <string name="text_project">Project</string>
     <string name="text_project_location">Project location</string>
@@ -975,18 +1039,19 @@
     <string name="text_version">Version</string>
     <string name="text_version_code">Version code</string>
     <string name="text_version_code_with_computing" tools:ignore="TypographyEllipsis">Version code (computing...)</string>
+    <string name="text_version_histories">Version histories</string>
     <string name="text_version_info">Version info</string>
     <string name="text_version_name">Version name</string>
     <string name="text_version_name_with_computing" tools:ignore="TypographyEllipsis">Version name (computing...)</string>
     <string name="text_view">View</string>
     <string name="text_view_docs">View documents</string>
     <string name="text_vsc_ext_version_not_meet_requirement">The version of the VSCode extension does not meet the requirements</string>
+    <string name="text_waiting_for_all_data_processing_to_complete" tools:ignore="TypographyEllipsis">Waiting for all data processing to complete...</string>
     <string name="text_weekly_task">Weekly task</string>
     <string name="text_weekly_task_should_check_day_of_week">At least one day must be selected</string>
     <string name="text_working_dir_path">Working directory path</string>
     <string name="text_write_secure_settings">Write security settings</string>
     <string name="text_write_secure_settings_description">Secure system settings, containing system preferences that applications can read but are not allowed to write.\nThese are for preferences that the user must explicitly modify through the UI of a system app.\nWith secure system settings permission, normal applications can directly modify the secure settings (such as accessibility service).</string>
     <string name="text_write_system_settings">Write system settings</string>
-    <string name="error_resolved_path_for_a_relative_path_cannot_be_null">Resolved path for \"%1$s\" cannot be null</string>
 
 </resources>

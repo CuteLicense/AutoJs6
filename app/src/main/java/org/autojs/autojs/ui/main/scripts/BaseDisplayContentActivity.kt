@@ -34,12 +34,11 @@ abstract class BaseDisplayContentActivity : BaseActivity() {
 
     override val handleStatusBarThemeColorAutomatically = false
 
-    abstract var internalMenuResource: Int
-
     abstract var highlightGrammarLocator: GrammarLocator
     abstract var highlightGrammarName: String
     abstract var highlightThemeLanguage: String
 
+    open var internalMenuResource: Int = 0
     open var themeColorDayNight = R.color.md_blue_gray_50 to R.color.md_blue_gray_900
 
     private lateinit var internalTextView: TextView
@@ -65,14 +64,19 @@ abstract class BaseDisplayContentActivity : BaseActivity() {
         }
 
         internalTextView = binding.textView
+
         internalFabView = binding.fab.apply {
-            setOnClickListener { view -> showPopupMenu(view, internalTextView) }
-            ViewUtils.excludeFloatingActionButtonFromNavigationBar(this)
+            if (internalMenuResource > 0) {
+                setOnClickListener { view -> showPopupMenu(view, internalTextView) }
+                ViewUtils.excludeFloatingActionButtonFromBottomNavigationBar(this)
+                visibility = View.VISIBLE
+            }
         }
 
         val scaleGestureDetector = ScaleGestureDetector(this, ScaleListener(internalTextView))
 
         val innerScrollView = binding.innerScrollView.also {
+            ViewUtils.excludePaddingClippableViewFromBottomNavigationBar(it)
             it.setOnTouchListener { view, event ->
                 when (event.pointerCount) {
                     2 -> {
@@ -97,7 +101,6 @@ abstract class BaseDisplayContentActivity : BaseActivity() {
                         //  ! zh-CN: 事实上, 此处依然存疑.
                         //  ! Reference: https://stackoverflow.com/questions/3866499/two-directional-scroll-view
                         //  !
-
                         super.onTouchEvent(event) or view.onTouchEvent(event)
                     }
                     else -> super.onTouchEvent(event)
@@ -116,7 +119,6 @@ abstract class BaseDisplayContentActivity : BaseActivity() {
                     else -> super.onTouchEvent(event)
                 }
             }
-            ViewUtils.excludePaddingClippableViewFromNavigationBar(it)
         }
 
         // 使用协程加载内容
@@ -146,12 +148,12 @@ abstract class BaseDisplayContentActivity : BaseActivity() {
             internalFabView.backgroundTintList = ColorStateList.valueOf(themeColorNight)
             internalFabView.imageTintList = ColorStateList.valueOf(if (ViewUtils.isLuminanceDark(themeColorNight)) getColor(R.color.night) else getColor(R.color.day))
             ViewUtils.setStatusBarBackgroundColor(this, themeColorNight)
-            ViewUtils.setStatusBarAppearanceLight(this, ViewUtils.isLuminanceDark(themeColorNight))
+            ViewUtils.setStatusBarIconLight(this, ViewUtils.isLuminanceDark(themeColorNight))
         } else {
             internalFabView.backgroundTintList = ColorStateList.valueOf(themeColorDay)
             internalFabView.imageTintList = ColorStateList.valueOf(if (ViewUtils.isLuminanceDark(themeColorDay)) getColor(R.color.night) else getColor(R.color.day))
             ViewUtils.setStatusBarBackgroundColor(this, themeColorDay)
-            ViewUtils.setStatusBarAppearanceLight(this, ViewUtils.isLuminanceDark(themeColorDay))
+            ViewUtils.setStatusBarIconLight(this, ViewUtils.isLuminanceDark(themeColorDay))
         }
     }
 
@@ -221,10 +223,6 @@ abstract class BaseDisplayContentActivity : BaseActivity() {
     }
 
     private fun showPopupMenu(view: View, textView: TextView) {
-        if (internalMenuResource == 0) {
-            ViewUtils.showToast(view.context, "Menu resource is not set a valid resource id", true)
-            return
-        }
         val popupMenu = android.widget.PopupMenu(this, view).also {
             it.inflate(internalMenuResource)
         }

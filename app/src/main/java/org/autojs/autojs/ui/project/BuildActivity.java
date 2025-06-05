@@ -3,6 +3,7 @@ package org.autojs.autojs.ui.project;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,18 +30,22 @@ import com.google.android.material.textfield.TextInputLayout;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import net.dongliu.apk.parser.ApkFile;
+import net.dongliu.apk.parser.bean.ApkMeta;
 import org.autojs.autojs.apkbuilder.ApkBuilder;
 import org.autojs.autojs.apkbuilder.keystore.KeyStore;
 import org.autojs.autojs.core.pref.Language;
+import org.autojs.autojs.extension.MaterialDialogExtensions;
+import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.model.explorer.Explorers;
 import org.autojs.autojs.model.script.ScriptFile;
 import org.autojs.autojs.project.ProjectConfig;
-import org.autojs.autojs.runtime.ScriptRuntime;
 import org.autojs.autojs.runtime.api.AppUtils;
 import org.autojs.autojs.runtime.api.AppUtils.Companion.SimpleVersionInfo;
 import org.autojs.autojs.runtime.api.augment.pinyin.Pinyin;
 import org.autojs.autojs.ui.BaseActivity;
 import org.autojs.autojs.ui.common.NotAskAgainDialog;
+import org.autojs.autojs.ui.error.ErrorDialogActivity;
 import org.autojs.autojs.ui.filechooser.FileChooserDialogBuilder;
 import org.autojs.autojs.ui.keystore.ManageKeyStoreActivity;
 import org.autojs.autojs.ui.main.scripts.ApkInfoDialogManager;
@@ -52,6 +57,7 @@ import org.autojs.autojs.util.AndroidUtils.Abi;
 import org.autojs.autojs.util.BitmapUtils;
 import org.autojs.autojs.util.EnvironmentUtils;
 import org.autojs.autojs.util.IntentUtils;
+import org.autojs.autojs.util.IntentUtils.ToastExceptionHolder;
 import org.autojs.autojs.util.ViewUtils;
 import org.autojs.autojs.util.WorkingDirectoryUtils;
 import org.autojs.autojs6.R;
@@ -60,12 +66,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -117,6 +126,11 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         add(new Pair<>("V2 + V3", "Android 7.0+"));
         add(new Pair<>("V2", "Android 7.0+"));
         add(new Pair<>("V3", "Android 9.0+"));
+    }};
+
+    private final Map<String, String> PERMISSION_ALIAS = new HashMap<>() {{
+        put("shizuku", "moe.shizuku.manager.permission.API_V23");
+        put("termux", "com.termux.permission.RUN_COMMAND");
     }};
 
     private final Map<String, Integer> SUPPORTED_PERMISSIONS = new TreeMap<>() {{
@@ -186,8 +200,8 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         put("com.android.launcher.permission.INSTALL_SHORTCUT", R.string.text_permission_desc_install_shortcut);
         put("com.android.launcher.permission.UNINSTALL_SHORTCUT", R.string.text_permission_desc_uninstall_shortcut);
         put("com.android.vending.BILLING", R.string.text_permission_desc_billing);
-        put("com.termux.permission.RUN_COMMAND", R.string.text_permission_desc_termux_run_command);
-        put("moe.shizuku.manager.permission.API_V23", R.string.text_permission_desc_shizuku);
+        put(PERMISSION_ALIAS.get("termux"), R.string.text_permission_desc_termux_run_command);
+        put(PERMISSION_ALIAS.get("shizuku"), R.string.text_permission_desc_shizuku);
     }};
 
     EditText mSourcePathView;
@@ -308,9 +322,9 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
         mFlexboxPermissionsView = binding.flexboxPermissions;
 
         binding.fab.setOnClickListener(v -> buildApk());
-        ViewUtils.excludeFloatingActionButtonFromNavigationBar(binding.fab);
+        ViewUtils.excludeFloatingActionButtonFromBottomNavigationBar(binding.fab);
 
-        ViewUtils.excludePaddingClippableViewFromNavigationBar(binding.scrollView);
+        ViewUtils.excludePaddingClippableViewFromBottomNavigationBar(binding.scrollView);
 
         binding.selectSource.setOnClickListener(v -> selectSourceFilePath());
         binding.selectOutput.setOnClickListener(v -> selectOutputDirPath());
@@ -407,6 +421,8 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                         getString(R.string.text_download_link_for_autojs6) + ":\n" +
                         getString(R.string.uri_autojs6_download_link));
         builder.positiveText(R.string.dialog_button_dismiss);
+        builder.positiveColorRes(R.color.dialog_button_hint);
+        MaterialDialogExtensions.widgetThemeColor(builder);
         MaterialDialog dialog = builder.show();
         if (dialog != null) {
             TextView contentView = dialog.getContentView();
@@ -532,11 +548,31 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
             checkBox.setAlpha(0.87f);
             checkBox.setText(permission + "\n" + getString(descriptionResId));
             checkBox.setButtonDrawable(R.drawable.round_checkbox);
+            checkBox.setBackground(null);
             checkBox.setGravity(Gravity.CENTER_VERTICAL);
             checkBox.setTextSize(12);
             int marginInPixels = (int) (8 * getResources().getDisplayMetrics().density);
             checkBox.setPadding(marginInPixels, 0, 0, 0);
-            checkBox.setChecked(false);
+            if (mProjectConfig != null) {
+                boolean checked = mProjectConfig.getPermissions().stream().anyMatch(p -> {
+                    var lc = p.toLowerCase(Locale.ROOT);
+                    var uc = p.toUpperCase(Locale.ROOT);
+                    if (p.equalsIgnoreCase(permission)) {
+                        return true;
+                    }
+                    if (permission.contains("android")) {
+                        String refined = uc.substring(uc.lastIndexOf(".") + 1).replaceAll("\\W", "_");
+                        return Objects.equals(refined, permission.substring(permission.lastIndexOf(".") + 1));
+                    }
+                    if (PERMISSION_ALIAS.containsKey(lc)) {
+                        return Objects.equals(permission, PERMISSION_ALIAS.get(lc));
+                    }
+                    return false;
+                });
+                checkBox.setChecked(checked);
+            } else {
+                checkBox.setChecked(false);
+            }
             mFlexboxPermissionsView.addView(checkBox);
         });
     }
@@ -595,6 +631,8 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                         mIsDefaultIcon = false;
                     }
                     mIconView.setVisibility(View.VISIBLE);
+
+                    updatePermissionsCheckboxes(packageName);
                 }, throwable -> {
                     mPackageNameView.setText(getString(R.string.format_default_package_name, file.getSimplifiedName().toLowerCase(Language.getPrefLanguage().getLocale())));
                     mVersionNameView.setText(R.string.default_build_apk_version_name);
@@ -606,6 +644,50 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 });
 
         setSource(file);
+    }
+
+    private void updatePermissionsCheckboxes(String packageName) {
+        ApkFile apkFile;
+        try {
+            apkFile = new ApkFile(new File(getPackageManager().getApplicationInfo(packageName, 0).sourceDir));
+        } catch (PackageManager.NameNotFoundException | IOException e) {
+            return;
+        }
+
+        try {
+            ApkMeta meta = apkFile.getApkMeta();
+            if (meta == null) {
+                return;
+            }
+            var initialPermissions = meta.usesPermissions;
+            IntStream.range(0, mFlexboxPermissionsView.getChildCount())
+                    .mapToObj(i -> mFlexboxPermissionsView.getChildAt(i))
+                    .forEach(child -> {
+                        CharSequence viewCharSequence = child instanceof RoundCheckboxWithText
+                                ? ((RoundCheckboxWithText) child).getText()
+                                : child instanceof CheckBox ? ((CheckBox) child).getText() : null;
+                        if (viewCharSequence == null) {
+                            return;
+                        }
+                        String viewText = viewCharSequence.toString().split("\n")[0].trim();
+                        if (!initialPermissions.contains(viewText)) {
+                            return;
+                        }
+                        if (child instanceof RoundCheckboxWithText) {
+                            ((RoundCheckboxWithText) child).setChecked(true);
+                        } else {
+                            ((CheckBox) child).setChecked(true);
+                        }
+                    });
+        } catch (Exception ignored) {
+            /* Ignored. */
+        } finally {
+            try {
+                apkFile.close();
+            } catch (IOException e) {
+                /* Ignored. */
+            }
+        }
     }
 
     private static String generatePackageNameSuffix(ScriptFile file) {
@@ -662,6 +744,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .dir(initialDir)
                 .chooseDir()
                 .singleChoice(dir -> mOutputPathView.setText(dir.getPath()))
+                .positiveColorRes(R.color.dialog_button_attraction)
                 .show();
     }
 
@@ -798,6 +881,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .title(R.string.text_prompt)
                 .content(content)
                 .positiveText(R.string.dialog_button_dismiss)
+                .positiveColorRes(R.color.dialog_button_failure)
                 .cancelable(false)
                 .show();
     }
@@ -871,7 +955,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
 
     @NotNull
     private ArrayList<String> collectCheckedItems(FlexboxLayout flexboxLayout) {
-        ArrayList<String> libs = new ArrayList<>();
+        ArrayList<String> result = new ArrayList<>();
 
         for (int i = 0; i < flexboxLayout.getChildCount(); i += 1) {
             View child = flexboxLayout.getChildAt(i);
@@ -879,19 +963,19 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 if (((RoundCheckboxWithText) child).isChecked()) {
                     CharSequence charSequence = ((RoundCheckboxWithText) child).getText();
                     if (charSequence != null) {
-                        libs.add(charSequence.toString());
+                        result.add(charSequence.toString());
                     }
                 }
             } else if (child instanceof CheckBox) {
                 if (((CheckBox) child).isChecked()) {
                     CharSequence charSequence = ((CheckBox) child).getText();
                     if (charSequence != null) {
-                        libs.add(charSequence.toString().split("\n")[0]);
+                        result.add(charSequence.toString().split("\n")[0]);
                     }
                 }
             }
         }
-        return libs;
+        return result;
     }
 
     private ApkBuilder callApkBuilder(File buildPath, File outApk, ProjectConfig projectConfig) throws Exception {
@@ -918,9 +1002,7 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-        String message = getString(R.string.text_failed_to_build) + "\n" + error.getMessage();
-        ViewUtils.showToast(this, message, true);
-        ScriptRuntime.popException(message);
+        ErrorDialogActivity.showErrorDialog(this, R.string.text_failed_to_build, error.getMessage());
         Log.e(LOG_TAG, "Failed to build", error);
     }
 
@@ -933,7 +1015,12 @@ public class BuildActivity extends BaseActivity implements ApkBuilder.ProgressCa
                 .content(getString(R.string.format_build_succeeded, outApk.getPath()))
                 .positiveText(R.string.text_install)
                 .positiveColorRes(R.color.dialog_button_attraction)
-                .onPositive((dialog, which) -> IntentUtils.installApk(BuildActivity.this, outApk.getPath()))
+                .onPositive((dialog, which) -> IntentUtils.installApk(
+                        BuildActivity.this,
+                        outApk.getPath(),
+                        AppFileProvider.AUTHORITY,
+                        new ToastExceptionHolder(BuildActivity.this)
+                ))
                 .negativeText(R.string.text_cancel)
                 .negativeColorRes(R.color.dialog_button_default)
                 .neutralText(R.string.dialog_button_file_information)

@@ -21,6 +21,11 @@
     <string name="apk_info_target_sdk">SDK objetivo</string>
     <string name="blocking_operations_cannot_be_performed_on_the_ui_thread_for_waitforactivity_with_solution">No se pueden realizar operaciones bloqueantes en el hilo de UI. Intente ejecutar `waitForActivity` en un subproceso o subscript, o use `setInterval` para repetir y comprobar la actividad</string>
     <string name="blocking_operations_cannot_be_performed_on_the_ui_thread_for_waitforpackage_with_solution">No se pueden realizar operaciones bloqueantes en el hilo de UI. Intente ejecutar `waitForPackage` en un subproceso o subscript, o use `setInterval` para repetir y comprobar el paquete</string>
+    <string name="changelog_label_dependency">Dependencia</string>
+    <string name="changelog_label_feature">Nuevo</string>
+    <string name="changelog_label_fix">Corrección</string>
+    <string name="changelog_label_hint">Sugerencia</string>
+    <string name="changelog_label_improvement">Mejora</string>
     <string name="color_library_android_colors">Biblioteca de colores de Android</string>
     <string name="color_library_css_colors">Biblioteca de colores CSS</string>
     <string name="color_library_default_colors">Biblioteca de colores predeterminada</string>
@@ -51,6 +56,7 @@
     <string name="content_description_fab_for_display_manifest">Un botón de acción flotante para mostrar el manifiesto</string>
     <string name="content_failed_to_determine_index_of_theme_color_item">No se pudo determinar el índice del elemento de color del tema</string>
     <string name="content_failed_to_locate_library_for_theme_color">No se pudo localizar la biblioteca de colores para el color del tema</string>
+    <string name="content_failed_to_retrieve_released_notes_of_current_language_with_zh_hans_fallback">No se pudo obtener la información de la versión correspondiente al idioma actual, puede intentarlo más tarde.\n\nActualmente se mostrará temporalmente la información de la versión en \"简体中文 (zh-Hans)\".</string>
     <string name="content_github_feedback">Se lanzará una página web para informar de un problema.\nPuede ser necesaria una cuenta de GitHub.</string>
     <string name="content_way_of_output_for_recorded_script">Seleccione una forma de salida para el script recortado</string>
     <string name="crash_feedback">Copiar el registro de depuración o salir directamente</string>
@@ -64,7 +70,7 @@
     <string name="description_about_app_tips_preference">1. Mantenga pulsado el icono de la aplicación en la página \"Acerca de la aplicación y el desarrollador\" para saltar a la página de opciones de desarrollo de AutoJs6</string>
     <string name="description_app_language_preference">Esta preferencia para cambiar el idioma de visualización de AutoJs6, incluyendo los mensajes de excepción de los scripts en ejecución.\n\nNota: puede ser necesario reiniciar la aplicación para que el idioma se aplique como se espera.</string>
     <string name="description_change_working_dir_preference">Cambiar la ruta del directorio que contiene los scripts</string>
-    <string name="description_check_for_updates_preference">AutoJs6 obtiene y descarga las actualizaciones de GitHub.\n\nNota: La actualización aún no ofrece soporte multilingüe.</string>
+    <string name="description_check_for_updates_preference">AutoJs6 obtiene y descarga las actualizaciones de GitHub.</string>
     <string name="description_documentation_source_preference">Documentos locales: Utiliza los archivos incorporados de AutoJs6 como fuentes de documentación, sin necesidad de conexión a la red. El contenido cambia a medida que se actualiza AutoJs6.\nDocumentación en línea: Utilizando las páginas de GitHub como fuentes de documentación, se requiere conexión a la red. El contenido está siempre actualizado.\n\nNota: Para maximizar la experiencia de lectura de los documentos en línea, se recomienda utilizar un dispositivo de pantalla ancha, como un monitor de escritorio.\nNota: A partir de la versión 6.2.0, la documentación se encuentra todavía en las fases preliminares de desarrollo, y la mayor parte del contenido aún no ha sido escrito o actualizado.</string>
     <string name="description_documentation_source_preference_more">Para que el tema oscuro sea compatible con las páginas de los documentos, deben cumplirse las siguientes condiciones\n1. AutoJs6 tiene activado el modo nocturno\n2. Sistema Android WebView (o navegadores como Google Chrome):\n- Android API Level 29 (Android 10) [Q] y superior: versión >= 76\n- Android API Level 28 (Android 9) [P] e inferiores: versión >= 105</string>
     <string name="description_extending_js_build_in_objects">La ampliación de los objetos incorporados de JavaScript puede aumentar la flexibilidad del código y permitir una funcionalidad más rica, pero puede causar conflictos e incluso roturas.\nTodos los scripts tienen las extensiones incorporadas habilitadas por defecto cuando la opción está activada.\nLas extensiones incorporadas suelen ser inseguras y no se recomiendan a menos que se comprendan claramente los principios y riesgos de las extensiones incorporadas.\nCuando la opción está desactivada, las extensiones incorporadas aún pueden ser habilitadas a través del objeto global plugins, como se describe en la documentación del proyecto.</string>
@@ -79,6 +85,7 @@
     <string name="description_root_record_out_file_type_preference">Tipo binario: no editable, con la extensión de archivo \"auto\"\nTipo JavaScript: se puede editar o copiar directamente, con la extensión de archivo \"js\"</string>
     <string name="description_stable_mode">El modo estable hace que sea más estable al obtener los límites de diseño, pero algunos resultados pueden ser ignorados.\nEs necesario reiniciar el servicio de accesibilidad.</string>
     <string name="description_theme_color_preference">El color del tema se aplica a los widgets, incluidos, entre otros, los siguientes\nBarra de estado\nBarra de aplicaciones\nIcono de archivo\nIcono de elemento de tarea\nFab\nTítulo de la categoría de ajustes\nBotón de cambio\n\nNota: A partir de la versión 6.2.0 de AutoJs6, todavía no hay diferencia entre el color primario, el color primario oscuro y el color de acento.</string>
+    <string name="description_version_histories_preference">Ver el historial de versiones publicadas de AutoJs6 en GitHub y las estadísticas de las categorías importantes.</string>
     <string name="dialog_button_back">@string/text_back</string>
     <string name="dialog_button_cancel">Cancelar</string>
     <string name="dialog_button_cancel_download">Cancelar</string>
@@ -105,12 +112,20 @@
     <string name="dialog_button_update_now">Actualizar</string>
     <string name="dialog_button_use_default">Usar por defecto</string>
     <string name="dialog_button_use_palette">Usar paleta</string>
+    <string name="dialog_button_version_histories">Historial</string>
     <string name="dialog_button_view_file">Ver archivo</string>
     <string name="dialog_title_color_details">Detalles del color</string>
     <string name="dialog_title_color_palette">Paleta de colores</string>
     <string name="dialog_title_theme_color_details">Detalles del color del tema</string>
     <string name="edit_and_run_handle_intent_error">No se puede procesar el archivo</string>
     <string name="edit_exit_without_save_warn">El contenido no se ha guardado, ¿está seguro de salir?</string>
+    <string name="editable_file_info_byte_count_label">Bytes</string>
+    <string name="editable_file_info_char_count_label">Caracteres</string>
+    <string name="editable_file_info_file_charset_label">Charset</string>
+    <string name="editable_file_info_file_path_label">Ruta</string>
+    <string name="editable_file_info_file_size_label">Tamaño</string>
+    <string name="editable_file_info_line_break_label">Salto</string>
+    <string name="editable_file_info_line_count_label">Líneas</string>
     <string name="entry_app_language_auto">Siga el sistema</string>
     <string name="entry_documentation_source_local">Documentos locales</string>
     <string name="entry_documentation_source_online">Documentos en línea</string>
@@ -177,8 +192,10 @@
     <string name="error_failed_to_grant_shizuku_access">Fallo en la concesión de permisos Shizuku</string>
     <string name="error_failed_to_instantiate">Error al instanciar \"%s\"</string>
     <string name="error_failed_to_instantiate_with_cause"><![CDATA[Error al instanciar \"%1$s\": [ %2$s ]]]></string>
-    <string name="error_failed_to_invoke_method_with_description">Error al invocar el método %1$s</string>
     <string name="error_failed_to_render_content">Error al renderizar el contenido</string>
+    <string name="error_failed_to_retrieve_released_notes">No se pudo obtener la información de la versión</string>
+    <string name="error_failed_to_retrieve_version_histories">No se pudo obtener el historial de versiones</string>
+    <string name="error_failed_to_retrieve_version_properties_file_to_parse_version_information">No se pudo obtener version.properties para analizar la información de la versión</string>
     <string name="error_failed_to_revoke_shizuku_access">Fallo en la revocación de permisos Shizuku</string>
     <string name="error_failed_to_run_script">Error al ejecutar el script</string>
     <string name="error_file_in_path_does_not_exist">El archivo en la ruta \"%1$s\" no existe</string>
@@ -211,6 +228,12 @@
     <string name="error_no_accessibility_permission">El servicio de accesibilidad está desactivado y el script se ha detenido</string>
     <string name="error_no_accessibility_permission_to_capture">El servicio de accesibilidad no está activado</string>
     <string name="error_no_accessibility_service">No hay servicio de accesibilidad</string>
+    <string name="error_no_applications_available_for_browsing_this_link">No hay aplicaciones disponibles para abrir este enlace</string>
+    <string name="error_no_applications_available_for_editing_this_file">No hay aplicaciones disponibles para editar este archivo</string>
+    <string name="error_no_applications_available_for_installing_this_file">No hay aplicaciones disponibles para instalar este archivo</string>
+    <string name="error_no_applications_available_for_playing_this_file">No hay aplicaciones disponibles para reproducir este archivo</string>
+    <string name="error_no_applications_available_for_sending_this_file">No hay aplicaciones disponibles para enviar este archivo</string>
+    <string name="error_no_applications_available_for_viewing_this_file">No hay aplicaciones disponibles para ver este archivo</string>
     <string name="error_no_display_over_other_apps_permission">No hay permiso de \"mostrar sobre otras aplicaciones\".</string>
     <string name="error_no_permission_to_access_shizuku">No hay permiso para acceder a Shizuku</string>
     <string name="error_no_post_notifications_permission">Sin permiso para \"enviar notificaciones\"</string>
@@ -231,6 +254,7 @@
     <string name="error_repeated_colon_symbol">Símbolo de dos puntos repetido</string>
     <string name="error_repeated_dot_symbol">Símbolo de punto repetido</string>
     <string name="error_required_property_is_nullish_or_does_not_exist">La propiedad requerida \"%1$s\" es nula o no existe</string>
+    <string name="error_resolved_path_for_a_relative_path_cannot_be_null">La ruta resuelta para \"%1$s\" no puede ser nula</string>
     <string name="error_script_is_on_exiting">El script está al salir</string>
     <string name="error_selector_method_without_calling">Se debería llamar al método selector en lugar de pasarlo como parámetro: %s</string>
     <string name="error_selector_result_type_with_compass">No se puede usar una brújula cuando el tipo de resultado es selector</string>
@@ -252,6 +276,7 @@
     <string name="error_unknown_picker_result_type_with_params" formatted="false">Tipo de resultado desconocido {nombre: %s, parámetro: %s}</string>
     <string name="error_unknown_picker_selector_type" formatted="false">Selector desconocido {nombre: %s, tipo: %s}</string>
     <string name="error_unknown_type">Tipo desconocido: %s</string>
+    <string name="error_webp_lossless_quality_not_supported">El formato WebP-Lossless no se puede comprimir con un parámetro de calidad; usa JPEG/PNG/WebP-Lossy en su lugar</string>
     <string name="file_not_exist_or_readable">El archivo no existe o no se puede leer: %s</string>
     <string name="foreground_notification_channel_name">Servicio de primer plano de AutoJs6</string>
     <string name="foreground_notification_text">Haga clic para iniciar AutoJs6</string>
@@ -266,6 +291,25 @@
     <string name="hint_loop_delay">Retraso antes del bucle</string>
     <string name="hint_loop_times">0 para bucle infinito</string>
     <string name="label_latest_used_time">Último uso: %1$s</string>
+    <string name="logger_ver_history_blob_thread_failure">Hilo \"blob\" fallido</string>
+    <string name="logger_ver_history_blob_thread_success">Hilo \"blob\" exitoso, escribiendo caché sin conexión</string>
+    <string name="logger_ver_history_data_loaded">Datos cargados</string>
+    <string name="logger_ver_history_initial_content_chosen">Contenido inicial seleccionado</string>
+    <string name="logger_ver_history_insert_new_entries">Insertando nuevas entradas</string>
+    <string name="logger_ver_history_load_local_data">Cargando datos locales</string>
+    <string name="logger_ver_history_local_asset_file">Archivo de recursos local</string>
+    <string name="logger_ver_history_local_asset_latest">El archivo de recursos local está en la última versión</string>
+    <string name="logger_ver_history_local_data_empty">Los datos locales están vacíos</string>
+    <string name="logger_ver_history_local_data_newer_stop_online">Los datos locales son más recientes, se detiene el análisis en línea</string>
+    <string name="logger_ver_history_no_processing_needed">No se necesita procesamiento</string>
+    <string name="logger_ver_history_offline_cache_file">Archivo de caché sin conexión</string>
+    <string name="logger_ver_history_offline_cache_latest">El archivo de caché sin conexión está en la última versión</string>
+    <string name="logger_ver_history_overwrite_date">Sobrescribiendo contenido de fecha</string>
+    <string name="logger_ver_history_overwrite_update_record">Sobrescribiendo registro de actualización</string>
+    <string name="logger_ver_history_raw_thread_failure">Hilo \"raw\" fallido</string>
+    <string name="logger_ver_history_raw_thread_success">Hilo \"raw\" exitoso, escribiendo caché sin conexión</string>
+    <string name="logger_ver_history_start_blob_thread">Iniciando hilo de solicitud alterna \"blob\"</string>
+    <string name="logger_ver_history_start_raw_thread">Iniciando hilo de solicitud \"raw\"</string>
     <string name="media_info_album_label">Álbum</string>
     <string name="media_info_aspect_ratio_label">Relación de aspecto</string>
     <string name="media_info_audio_format_label">Audio</string>
@@ -306,6 +350,7 @@
     <string name="summary_text_launcher_shortcuts">Añadir accesos directos al lanzador</string>
     <string name="summary_use_volume_control_record">Iniciar o detener la grabación controlada por la tecla de bajar el volumen cuando se muestra el botón flotante</string>
     <string name="summary_use_volume_key_to_stop_running_scripts">Pulse la tecla \"Subir volumen\" para detener todos los scripts en ejecución</string>
+    <string name="summary_version_histories_preference">Ver el historial de versiones publicadas y las estadísticas</string>
     <string name="text_a11y_service">Servicio de accesibilidad</string>
     <string name="text_a11y_service_description">Requerido por el funcionamiento automático del script (clic, pulsación larga, deslizamiento, etc.).</string>
     <string name="text_a11y_service_enabled_but_not_running">El servicio de accesibilidad está habilitado pero no se está ejecutando (vuelva a habilitarlo o reinicie el dispositivo)</string>
@@ -318,6 +363,7 @@
     <string name="text_about_functions_feedback">Comentarios</string>
     <string name="text_about_functions_licenses">Licencias</string>
     <string name="text_about_functions_update">Actualizar</string>
+    <string name="text_about_functions_version_histories">@string/text_version_histories</string>
     <string name="text_access_has_been_granted">Se ha concedido el acceso</string>
     <string name="text_act_by_click">Clic (click)</string>
     <string name="text_act_by_long_click">Clic largo (longClick)</string>
@@ -335,6 +381,7 @@
     <string name="text_all_files_access_is_needed">Se necesita \"All files access\" para acceder a los archivos de script en el teléfono</string>
     <string name="text_all_histories">Todos los historiales</string>
     <string name="text_all_histories_cleared">Todos los historiales han sido borrados</string>
+    <string name="text_all_items_cleared">Todos los elementos han sido borrados</string>
     <string name="text_already_copied_to_clip">Copiado en el portapapeles</string>
     <string name="text_already_copied_to_clip_but_only_latest_few_items">Ya se ha copiado en el portapapeles (sólo los últimos %d elementos)</string>
     <string name="text_already_created">Creado</string>
@@ -407,8 +454,12 @@
     <string name="text_captured_window_info_type_of_split_screen_divider">Divisor de pantalla dividida</string>
     <string name="text_captured_window_info_type_of_system">Sistema</string>
     <string name="text_captured_window_info_type_unknown">Tipo desconocido</string>
+    <string name="text_category_filter">Filtro de categoría</string>
     <string name="text_change_working_dir">Cambiar el directorio de trabajo</string>
+    <string name="text_changelog_item_dependency">Ajustes en algunas dependencias o versiones de bibliotecas locales</string>
     <string name="text_check_for_updates">Comprobar si hay actualizaciones</string>
+    <string name="text_check_for_updates_while_ignoring_the_local_version">Buscar actualizaciones (ignorar la versión local)</string>
+    <string name="text_check_for_updates_while_ignoring_the_local_version_description">Obtener directamente la última versión remota al buscar actualizaciones</string>
     <string name="text_checking_update" tools:ignore="TypographyEllipsis">Comprobando las actualizaciones...</string>
     <string name="text_city_or_locality">Ciudad o localidad</string>
     <string name="text_class_or_package_name">Nombre de la clase/paquete</string>
@@ -425,13 +476,16 @@
     <string name="text_close_floating_button">Cerrar botón flotante</string>
     <string name="text_code">Código</string>
     <string name="text_code_beautify">Embellecer el código</string>
+    <string name="text_collapse_all">Contraer todo</string>
     <string name="text_color_library">Biblioteca de colores</string>
     <string name="text_color_palette">Paleta de colores</string>
     <string name="text_command_already_copied_to_clip">Comando copiado en el portapapeles</string>
     <string name="text_comment">Comente</string>
     <string name="text_compatibility">Compatibilidad</string>
+    <string name="text_confidence_level">Confianza</string>
     <string name="text_config">Configuración</string>
     <string name="text_confirm_to_clear_all_histories">¿Está seguro de borrar todos los historiales?</string>
+    <string name="text_confirm_to_clear_all_items">¿Seguro que desea borrar todos los elementos?</string>
     <string name="text_confirm_to_clear_histories_of">Se borrarán los siguientes historiales\n\n[ %1$s ]\n\n¿Está seguro de borrarlos?</string>
     <string name="text_confirm_to_clear_histories_of_all_color_libraries">Se borrarán los historiales siguientes\n\n[ Todas las bibliotecas de colores ]\n\n¿Está seguro de borrarlos?</string>
     <string name="text_confirm_to_delete">¿Seguro que quieres borrar?</string>
@@ -481,6 +535,7 @@
     <string name="text_device_model">Modelo del dispositivo</string>
     <string name="text_device_name">Nombre del dispositivo</string>
     <string name="text_device_product_name">Nombre del producto del dispositivo</string>
+    <string name="text_device_screen_resolution">Resolución de pantalla del dispositivo</string>
     <string name="text_directly_download">Descargar ahora</string>
     <string name="text_directory">Directorio</string>
     <string name="text_display_over_other_app">Mostrar sobre otras aplicaciones</string>
@@ -518,11 +573,13 @@
     <string name="text_error">Error</string>
     <string name="text_error_copy_file" formatted="true">No se ha podido copiar el archivo: %s</string>
     <string name="text_error_report">Informe de error</string>
+    <string name="text_estimated">Estimado</string>
     <string name="text_execute">Ejecutar</string>
     <string name="text_execute_code">Ejecutar código</string>
     <string name="text_execution_finished" formatted="false">[%s] terminó en %s segundos.\n</string>
     <string name="text_exit">Salir</string>
     <string name="text_exit_directly">Salir de</string>
+    <string name="text_expand_all">Expandir todo</string>
     <string name="text_export">Exportar</string>
     <string name="text_exported">Exportado</string>
     <string name="text_extending_js_build_in_objects">Extensión de los objetos incorporados de JavaScript</string>
@@ -551,6 +608,7 @@
     <string name="text_failed_to_send_log_entries">Error al enviar entradas de registro</string>
     <string name="text_failed_to_write_file">Fallo al escribir el archivo</string>
     <string name="text_file">Archivo</string>
+    <string name="text_file_details">Detalles del archivo</string>
     <string name="text_file_exists">El archivo ya existe</string>
     <string name="text_file_explorer">Explorador de archivos</string>
     <string name="text_file_extensions_title">Extensiones de archivo</string>
@@ -589,6 +647,8 @@
     <string name="text_hidden_files_title">Archivos y carpetas ocultos</string>
     <string name="text_hide">Ocultar</string>
     <string name="text_hide_button">Botón de ocultar</string>
+    <string name="text_hide_node">Ocultar este nodo</string>
+    <string name="text_hide_same_frame_nodes">Ocultar nodo del mismo marco</string>
     <string name="text_histories">Historiales</string>
     <string name="text_icon">Icono</string>
     <string name="text_ignore_battery_optimizations">Ignorar las optimizaciones de la batería</string>
@@ -632,6 +692,7 @@
     <string name="text_launcher_shortcuts">Atajos del lanzador</string>
     <string name="text_layout_inspector_is_dumping" tools:ignore="TypographyEllipsis">Inspeccionando el diseño...</string>
     <string name="text_licenses">Licencias de fuentes abiertas</string>
+    <string name="text_loading_a_fallback_solution_with_dots" tools:ignore="TypographyEllipsis">Intentando una solución alternativa...</string>
     <string name="text_loading_with_dots" tools:ignore="TypographyEllipsis">Cargando...</string>
     <string name="text_locate_current_theme_color">Localizar color del tema actual</string>
     <string name="text_log">Registrar</string>
@@ -797,6 +858,8 @@
     <string name="text_please_choose">Elija</string>
     <string name="text_please_choose_a_script">Elija un script</string>
     <string name="text_please_input_name">Nombre de entrada</string>
+    <string name="text_please_wait" tools:ignore="TypographyEllipsis">Por favor, espere...</string>
+    <string name="text_please_wait_a_moment_before_trying_again" tools:ignore="TypographyEllipsis">Por favor, inténtalo de nuevo más tarde...</string>
     <string name="text_pointer_location">Ubicación del puntero</string>
     <string name="text_pointer_location_toggle_failed_with_hint">Falló la conmutación de la \"ubicación del puntero\".\nSe requiere acceso a la raíz.</string>
     <string name="text_post_notifications_permission">Notificaciones postales</string>
@@ -808,6 +871,7 @@
     <string name="text_press_again_to_exit">Pulse de nuevo para salir</string>
     <string name="text_press_back_or_vol_down_to_close_window">Para cerrar, presiona \"Atrás\" o \"Bajar volumen\"</string>
     <string name="text_preview">Vista previa</string>
+    <string name="text_process_log">Registro de proceso</string>
     <string name="text_processing">Procesando</string>
     <string name="text_project">Proyecto</string>
     <string name="text_project_location">Ubicación del proyecto</string>
@@ -978,18 +1042,19 @@
     <string name="text_version">Versión</string>
     <string name="text_version_code">Código de la versión</string>
     <string name="text_version_code_with_computing" tools:ignore="TypographyEllipsis">Código de la versión (Calculando...)</string>
+    <string name="text_version_histories">Historial de versiones</string>
     <string name="text_version_info">Información de la versión</string>
     <string name="text_version_name">Nombre de la versión</string>
     <string name="text_version_name_with_computing" tools:ignore="TypographyEllipsis">Nombre de la versión (Calculando...)</string>
     <string name="text_view">Ver</string>
     <string name="text_view_docs">Ver documentos</string>
     <string name="text_vsc_ext_version_not_meet_requirement">La versión de la extensión VSCode no cumple los requisitos</string>
+    <string name="text_waiting_for_all_data_processing_to_complete" tools:ignore="TypographyEllipsis">Esperando a que se complete el procesamiento de todos los datos...</string>
     <string name="text_weekly_task">Tarea semanal</string>
     <string name="text_weekly_task_should_check_day_of_week">Debe seleccionarse al menos un día</string>
     <string name="text_working_dir_path">Ruta del directorio de trabajo</string>
     <string name="text_write_secure_settings">Escribir la configuración de seguridad</string>
     <string name="text_write_secure_settings_description">Ajustes de seguridad del sistema, que contienen preferencias del sistema que las aplicaciones pueden leer pero no pueden escribir.\nSe trata de preferencias que el usuario debe modificar explícitamente a través de la interfaz de usuario de una aplicación del sistema.\nCon el permiso de configuración segura del sistema, las aplicaciones normales pueden modificar directamente la configuración segura (como el servicio de accesibilidad).</string>
     <string name="text_write_system_settings">Escribir la configuración del sistema</string>
-    <string name="error_resolved_path_for_a_relative_path_cannot_be_null">La ruta resuelta para \"%1$s\" no puede ser nula</string>
 
 </resources>

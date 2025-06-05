@@ -23,16 +23,18 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
@@ -40,6 +42,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.children
+import androidx.core.view.get
+import androidx.core.view.size
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import org.autojs.autojs.app.GlobalAppContext
@@ -48,8 +53,6 @@ import org.autojs.autojs.theme.ThemeColorManager
 import org.autojs.autojs.util.StringUtils.key
 import org.autojs.autojs6.R
 import kotlin.math.roundToInt
-import androidx.core.view.size
-import androidx.core.view.get
 
 /**
  * Created by Stardust on Jan 24, 2017.
@@ -65,6 +68,8 @@ object ViewUtils {
         NULL(key(R.string.key_night_mode_null)),
         ;
     }
+
+    private const val TAG_STATUS_BAR_SCRIM = "status_bar_scrim"
 
     @JvmStatic
     var isKeepScreenOnWhenInForegroundEnabled
@@ -209,107 +214,110 @@ object ViewUtils {
     }
 
     @JvmStatic
-    fun isStatusBarAppearanceLight(activity: Activity): Boolean {
-        return !isStatusBarAppearanceDark(activity)
+    fun isStatusBarIconLight(activity: Activity): Boolean {
+        return !WindowInsetsControllerCompat(activity.window, activity.window.decorView).isAppearanceLightStatusBars
     }
 
     @JvmStatic
-    fun isStatusBarAppearanceDark(activity: Activity): Boolean {
-        @Suppress("DEPRECATION")
-        return hasSystemUiVisibility(activity, View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
+    fun isStatusBarIconDark(activity: Activity): Boolean {
+        return !isStatusBarIconLight(activity)
     }
 
-    fun setStatusBarAppearanceLight(activity: Activity, isLight: Boolean) {
-        @Suppress("DEPRECATION")
-        when {
-            isStatusBarAppearanceLight(activity) == isLight -> return
-            isLight -> removeSystemUiVisibility(activity, View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-            else -> appendSystemUiVisibility(activity, View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-        }
+    fun setStatusBarIconLight(activity: Activity, isLight: Boolean) {
+        WindowInsetsControllerCompat(activity.window, activity.window.decorView).isAppearanceLightStatusBars = !isLight
     }
 
-    fun setStatusBarAppearanceLightByColorLuminance(activity: Activity, aimColor: Int) {
-        val shouldBeLight = isLuminanceDark(aimColor)
-        setStatusBarAppearanceLight(activity, shouldBeLight)
+    fun setStatusBarIconLightByColorLuminance(activity: Activity, @ColorInt referenceBackgroundColor: Int) {
+        val shouldBeLight = isLuminanceDark(referenceBackgroundColor)
+        setStatusBarIconLight(activity, shouldBeLight)
     }
 
     @JvmStatic
-    fun setStatusBarBackgroundColor(activity: Activity, color: Int) {
-        val window = activity.window
-        val decorView = window.decorView
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            decorView.setOnApplyWindowInsetsListener { view, insets ->
-                val statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars())
-                val contentView: ViewGroup? = activity.findViewById(android.R.id.content)
-                val statusBarOverlay = View(activity).apply {
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        statusBarInsets.top, // 状态栏高度
-                    )
-                    setBackgroundColor(color)
-                }
-                contentView?.addView(statusBarOverlay)
-                view.onApplyWindowInsets(insets)
+    fun setStatusBarBackgroundColor(activity: Activity, @ColorInt color: Int) {
+        @Suppress("DEPRECATION")
+        activity.window.apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                isStatusBarContrastEnforced = false
             }
-        } else {
-            @Suppress("DEPRECATION")
-            window.statusBarColor = color
+            statusBarColor = color
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            installOrUpdateScrim(activity, color)
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    @JvmStatic
-    fun isNavigationBarAppearanceLight(activity: Activity): Boolean {
-        return !isNavigationBarAppearanceDark(activity)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    @JvmStatic
-    fun isNavigationBarAppearanceDark(activity: Activity): Boolean {
-        @Suppress("DEPRECATION")
-        return hasSystemUiVisibility(activity, View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun setNavigationBarAppearanceLight(activity: Activity, isLight: Boolean) {
-        @Suppress("DEPRECATION")
-        when {
-            isNavigationBarAppearanceLight(activity) == isLight -> return
-            isLight -> removeSystemUiVisibility(activity, View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
-            else -> appendSystemUiVisibility(activity, View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
+    private fun installOrUpdateScrim(activity: Activity, @ColorInt color: Int) {
+        val decor = activity.window.decorView as ViewGroup
+        val scrim = decor.children.find { it.tag == TAG_STATUS_BAR_SCRIM }
+            ?: FrameLayout(activity).also {
+                it.tag = TAG_STATUS_BAR_SCRIM
+                // Height will be set by Insets later.
+                // zh-CN: 高度稍后由 Insets 赋值.
+                val lp = FrameLayout.LayoutParams(MATCH_PARENT, 0, Gravity.TOP)
+                decor.addView(it, lp)
+            }
+        scrim.setBackgroundColor(color)
+        // Sync height with Insets change (precise after Android 15).
+        // zh-CN: 每次 Insets 变化时同步高度 (Android 15 之后才能保证精确).
+        ViewCompat.setOnApplyWindowInsetsListener(scrim) { v, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            if (v.layoutParams.height != statusBarHeight) {
+                v.layoutParams.height = statusBarHeight
+                v.requestLayout()
+            }
+            insets
         }
+    }
+
+    @JvmStatic
+    fun isNavigationBarIconLight(activity: Activity): Boolean {
+        return !WindowInsetsControllerCompat(activity.window, activity.window.decorView).isAppearanceLightNavigationBars
+    }
+
+    @JvmStatic
+    fun isNavigationBarIconDark(activity: Activity): Boolean {
+        return !isNavigationBarIconLight(activity)
+    }
+
+    fun setNavigationBarIconLight(activity: Activity, isLight: Boolean) {
+        WindowInsetsControllerCompat(activity.window, activity.window.decorView).isAppearanceLightNavigationBars = isLight
+    }
+
+    fun setNavigationBarIconLightByColorLuminance(activity: Activity, @ColorInt referenceBackgroundColor: Int) {
+        val shouldBeLight = isLuminanceDark(referenceBackgroundColor)
+        setNavigationBarIconLight(activity, shouldBeLight)
     }
 
     fun setNavigationBarBackgroundColor(activity: Activity, color: Int) {
         val window = activity.window
         val decorView = window.decorView
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            decorView.setOnApplyWindowInsetsListener { view, insets ->
-                val navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars())
-                val contentView: ViewGroup? = activity.findViewById(android.R.id.content)
-                val navBarOverlay = View(activity).apply {
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        navBarInsets.bottom, // 导航栏高度
-                    ).apply { gravity = Gravity.BOTTOM }
-                    setBackgroundColor(color)
-                }
-                contentView?.addView(navBarOverlay)
-                view.onApplyWindowInsets(insets)
-            }
-        } else {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             @Suppress("DEPRECATION")
             window.navigationBarColor = color
+            return
+        }
+
+        decorView.setOnApplyWindowInsetsListener { view, insets ->
+            val navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars())
+            val contentView: ViewGroup? = activity.findViewById(android.R.id.content)
+            val navBarOverlay = View(activity).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    MATCH_PARENT,
+                    navBarInsets.bottom, // 导航栏高度
+                ).apply { gravity = Gravity.BOTTOM }
+                setBackgroundColor(color)
+            }
+            contentView?.addView(navBarOverlay)
+            view.onApplyWindowInsets(insets)
         }
     }
 
     @JvmStatic
     @JvmOverloads
-    fun excludeFloatingActionButtonFromNavigationBar(fab: FloatingActionButton, extraMarginBottomDp: Float = 16F) {
+    fun excludeFloatingActionButtonFromBottomNavigationBar(fab: FloatingActionButton, extraMarginBottomDp: Float = 16F) {
         ViewCompat.setOnApplyWindowInsetsListener(fab) { view, insets ->
-            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             view.layoutParams.runCatching {
                 javaClass.getField("bottomMargin")
                     .setInt(this, DisplayUtils.dpToPx(extraMarginBottomDp).roundToInt() + bottomInset)
@@ -320,11 +328,28 @@ object ViewUtils {
 
     @JvmStatic
     @JvmOverloads
-    fun excludePaddingClippableViewFromNavigationBar(view: View, extraPaddingBottomDp: Float = 0F, clipToPadding: Boolean = false) {
+    fun excludePaddingClippableViewFromBottomNavigationBar(view: View, extraPaddingBottomDp: Float = 0F, clipToPadding: Boolean = false) {
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             view.setPadding(0, 0, 0, DisplayUtils.dpToPx(extraPaddingBottomDp).roundToInt() + bottomInset)
             runCatching { view.javaClass.getMethod("setClipToPadding", Boolean::class.java).invoke(view, clipToPadding) }
+            insets
+        }
+    }
+
+    @JvmStatic
+    fun excludeContentViewFromHorizontalNavigationBar(activity: Activity) {
+        val contentView = activity.findViewById<View?>(android.R.id.content) ?: return
+        ViewCompat.setOnApplyWindowInsetsListener(contentView) { v, insets ->
+            val sysInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            val left = sysInsets.left
+            val top = v.paddingTop
+            val right = sysInsets.right
+            val bottom = v.paddingBottom
+
+            v.setPaddingRelative(left, top, right, bottom)
+
             insets
         }
     }
@@ -346,11 +371,10 @@ object ViewUtils {
 
     fun makeBarsAdaptToNightMode(activity: AppCompatActivity) {
         val isConfigDark = isNightModeYes(activity)
-        val isConfigTakenAsLight = !isConfigDark
 
         getWindowInsetsController(activity).apply {
-            isAppearanceLightStatusBars = isConfigTakenAsLight
-            isAppearanceLightNavigationBars = isConfigTakenAsLight
+            isAppearanceLightStatusBars = isConfigDark
+            isAppearanceLightNavigationBars = isConfigDark
         }
     }
 
@@ -622,6 +646,40 @@ object ViewUtils {
                 activity.window.clearFlags(flags)
             }
         }
+    }
+
+    /**
+     * 显示软键盘.
+     *
+     * @param target 需要获取输入的视图 (如 EditText)
+     * @param useForced 是否使用 SHOW_FORCED 方式强制弹出, 默认 false, 代表由系统自行判断
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun showSoftInput(target: View, useForced: Boolean = false) {
+        val imm = target.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+        if (!target.hasFocus()) {
+            target.requestFocus()
+        }
+        target.post {
+            @Suppress("DEPRECATION")
+            val flag = when (useForced) {
+                true -> InputMethodManager.SHOW_FORCED
+                else -> InputMethodManager.SHOW_IMPLICIT
+            }
+            imm.showSoftInput(target, flag)
+        }
+    }
+
+    /**
+     * 隐藏软键盘.
+     *
+     * @param target 当前持有输入焦点的视图, 也可以是任意位于同一窗口的 View
+     */
+    @JvmStatic
+    fun hideSoftInput(target: View) {
+        val imm = target.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+        imm.hideSoftInputFromWindow(target.windowToken, 0)
     }
 
     class AutoNightMode {

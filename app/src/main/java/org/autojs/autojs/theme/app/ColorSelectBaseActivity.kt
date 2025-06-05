@@ -11,6 +11,7 @@ import android.view.ViewAnimationUtils
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,9 +53,9 @@ import org.autojs.autojs.util.ViewUtils.setMenuIconsColorByColorLuminance
 import org.autojs.autojs.util.ViewUtils.setNavigationIconColorByColorLuminance
 import org.autojs.autojs.util.ViewUtils.setTitlesTextColorByColorLuminance
 import org.autojs.autojs6.R
-import org.autojs.autojs6.R.string.text_search_color
 import org.greenrobot.eventbus.EventBus
 import java.util.*
+import kotlin.math.absoluteValue
 import kotlin.math.hypot
 import kotlin.properties.Delegates
 
@@ -103,8 +104,6 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
             subtitle = this@ColorSelectBaseActivity.getSubtitle()
             setSupportActionBar(this)
             setNavigationOnClickListener { finish() }
-            setTitleTextAppearance(this@ColorSelectBaseActivity, R.style.TextAppearanceMainTitle)
-            setSubtitleTextAppearance(this@ColorSelectBaseActivity, R.style.TextAppearanceMainSubtitle)
             mToolbar = this
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -130,7 +129,7 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
         !is SearchView -> null
         else -> searchView.also {
             mSearchView = it
-            it.queryHint = it.context.getString(text_search_color)
+            it.queryHint = it.context.getString(R.string.text_search_color)
             it.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?) = true.also { onQueryTextSimpleListener(query) }
                 override fun onQueryTextChange(newText: String?) = true.also { onQueryTextSimpleListener(newText) }
@@ -144,7 +143,7 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
         super.initThemeColors()
         updateToolbarColors()
         updateSearchViewColors()
-        ViewUtils.setStatusBarAppearanceLightByColorLuminance(this, currentColor)
+        ViewUtils.setStatusBarIconLightByColorLuminance(this, currentColor)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -198,7 +197,7 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
     }
 
     protected fun checkAndGetTargetInfoForThemeColorLocate(): TargetInfoForLocate? {
-        val targetLibraryId = Pref.getInt(KEY_SELECTED_COLOR_LIBRARY_ID, -1)
+        val targetLibraryId = Pref.getInt(KEY_SELECTED_COLOR_LIBRARY_ID, COLOR_LIBRARY_ID_DEFAULT)
         if (targetLibraryId == COLOR_LIBRARY_ID_PALETTE) {
             MaterialDialog.Builder(this)
                 .title(R.string.text_prompt)
@@ -213,12 +212,15 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
         }
         val targetLibrary = presetColorLibraries.find { it.id == targetLibraryId }
         if (targetLibrary == null) {
+            val targetLibraryIdHexString = "0x${targetLibraryId.absoluteValue.toString(16)}".let {
+                if (targetLibraryId < 0) "-$it" else it
+            }
             MaterialDialog.Builder(this)
                 .title(R.string.text_failed_to_locate)
                 .content(
                     getString(R.string.content_failed_to_locate_library_for_theme_color) + "\n" +
                             "\n" +
-                            "Target library ID: 0x${targetLibraryId.toString(16)}" + "\n" +
+                            "Target library ID: $targetLibraryIdHexString" + "\n" +
                             "Color library IDs: [ ${presetColorLibraries.sortedBy { it.id }.joinToString(", ") { "0x${it.id.toString(16)}" }} ]"
                 )
                 .negativeText(R.string.dialog_button_dismiss)
@@ -226,7 +228,13 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
                 .show()
             return null
         }
-        val targetItemIndex = Pref.getInt(KEY_SELECTED_COLOR_ITEM_ID, -1)
+        val defaultTargetItemIndex = when {
+            targetLibraryId == COLOR_LIBRARY_ID_DEFAULT -> {
+                targetLibrary.colors.find { getColor(it.colorRes) == ThemeColorManager.colorPrimary }?.itemId ?: SELECT_NONE
+            }
+            else -> SELECT_NONE
+        }
+        val targetItemIndex = Pref.getInt(KEY_SELECTED_COLOR_ITEM_ID, defaultTargetItemIndex)
         if (targetItemIndex !in targetLibrary.colors.indices) {
             MaterialDialog.Builder(this)
                 .title(R.string.text_failed_to_locate)
@@ -253,8 +261,8 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
             .setShowAlphaSlider(false)
             .setDialogTitle(R.string.dialog_title_color_palette)
             .setColor(initialColor ?: customColor)
-            .setOldColorPanelOnClickListener { showColorDetails(it.tag as? Int) }
-            .setNewColorPanelOnClickListener { showColorDetails(it.tag as? Int) }
+            .setOldColorPanelOnClickListener { v, dialog -> showColorDetails(v.tag as? Int, parentDialog = dialog) }
+            .setNewColorPanelOnClickListener { v, dialog -> showColorDetails(v.tag as? Int, parentDialog = dialog) }
             .setColorHistoriesHandler { showColorPickerHistories(it) }
             .create()
             .setColorPickerDialogListener { _, color: Int ->
@@ -494,12 +502,13 @@ abstract class ColorSelectBaseActivity : BaseActivity() {
         }
     }
 
-    protected fun showColorDetails(color: Int?, title: String? = null) {
+    protected fun showColorDetails(color: Int?, title: String? = null, parentDialog: DialogFragment? = null) {
         val customNeutral = ColorInfoDialogManager.CustomColorInfoDialogNeutral(
             textRes = R.string.dialog_button_use_palette,
             colorRes = R.color.dialog_button_hint,
-            onNeutralCallback = object: NeutralButtonCallback{
+            onNeutralCallback = object : NeutralButtonCallback {
                 override fun onClick(dialog: MaterialDialog, which: DialogAction, color: Int) {
+                    parentDialog?.dismiss()
                     dialog.dismiss()
                     showColorPicker(color)
                 }

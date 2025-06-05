@@ -3,6 +3,11 @@ package org.autojs.autojs.extension
 import android.view.View
 import android.widget.TextView
 import com.afollestad.materialdialogs.MaterialDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.autojs.autojs.theme.ThemeColorHelper
 import org.autojs.autojs.util.ClipboardUtils
 import org.autojs.autojs.util.IntentUtils
 import org.autojs.autojs.util.ViewUtils
@@ -18,10 +23,13 @@ object MaterialDialogExtensions {
         }
     }
 
+    @JvmStatic
     fun MaterialDialog.makeTextCopyable(textViewGetter: (dialog: MaterialDialog) -> TextView?) {
         makeTextCopyable(textViewGetter(this))
     }
 
+    @JvmStatic
+    @JvmOverloads
     fun MaterialDialog.makeTextCopyable(textView: TextView?, textValue: String? = textView?.text?.toString()) {
         if (textValue != null) {
             val context = this.context
@@ -32,20 +40,43 @@ object MaterialDialogExtensions {
         }
     }
 
-    fun TextView.setCopyableTextIfAbsent(dialog: MaterialDialog, f: () -> String?) {
-        val textView = this
-        val textValue = f.invoke()
-        if (textView.text == context.getString(R.string.ellipsis_six)) {
-            textView.text = textValue.takeUnless { it.isNullOrBlank() } ?: context.getString(R.string.text_unknown)
-        }
-        dialog.makeTextCopyable(textView, textValue)
+    fun MaterialDialog.setCopyableTextIfAbsent(textView: TextView, textValuePair: Pair<String?, String?>) {
+        setCopyableTextIfAbsent(textView, textValuePair.first, textValuePair.second)
     }
 
-    fun TextView.setCopyableText(dialog: MaterialDialog, f: () -> String?) {
-        val textView = this
-        val textValue = f.invoke()
+    fun MaterialDialog.setCopyableTextIfAbsent(textView: TextView, textValue: String?, suffix: String? = null) {
+        if (textView.text == context.getString(R.string.ellipsis_six)) {
+            textView.text = textValue.takeUnless { it.isNullOrBlank() }?.let { it + (suffix ?: "") } ?: context.getString(R.string.text_unknown)
+        }
+        this.makeTextCopyable(textView, textValue)
+    }
+
+    fun MaterialDialog.setCopyableTextIfAbsent(textView: TextView, scope: CoroutineScope, f: () -> String?) {
+        setCopyableTextIfAbsent(textView, scope, f, suffix = null)
+    }
+
+    fun MaterialDialog.setCopyableTextIfAbsent(textView: TextView, scope: CoroutineScope, f: () -> String?, suffix: String?) {
+        scope.launch(Dispatchers.IO) {
+            val textValue = f.invoke()
+            withContext(Dispatchers.Main) {
+                setCopyableTextIfAbsent(textView, textValue, suffix)
+            }
+        }
+    }
+
+    fun MaterialDialog.setCopyableText(textView: TextView, textValue: String?) {
         textView.text = textValue.takeUnless { it.isNullOrBlank() } ?: context.getString(R.string.text_unknown)
-        dialog.makeTextCopyable(textView, textValue)
+        this.makeTextCopyable(textView, textValue)
+    }
+
+    @JvmStatic
+    fun MaterialDialog.Builder.choiceWidgetThemeColor() = also {
+        it.choiceWidgetColor(ThemeColorHelper.getThemeColorStateList(context))
+    }
+
+    @JvmStatic
+    fun MaterialDialog.Builder.widgetThemeColor() = also {
+        it.widgetColor(ThemeColorHelper.getThemeColorStateList(context))
     }
 
 }

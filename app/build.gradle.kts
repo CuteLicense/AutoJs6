@@ -53,11 +53,17 @@ dependencies /* Unclassified */ {
     // SwipeRefreshLayout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    // ConstraintLayout
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+
     // FlexboxLayout
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
     // Common Markdown
     implementation("com.github.atlassian:commonmark-java:commonmark-parent-0.9.0")
+
+    // Flexmark Java HTML to Markdown Extensible Converter
+    implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
 
     // Licenses Dialog
     implementation("de.psdev.licensesdialog:licensesdialog:2.2.0")
@@ -160,11 +166,16 @@ dependencies /* Unclassified */ {
     // RapidOCR
     implementation(project(":libs:rapidocr"))
 
+    // Image Quantization
+    implementation(project(":libs:imagequant"))
+
     // Android Job
     implementation(project(":libs:android-job-simplified-1.4.3"))
 
-    // APK Parser (https://github.com/jaredrummler/APKParser)
-    implementation(project(":libs:apk-parser-1.0.2"))
+    // APK Parser
+    // implementation("com.jaredrummler:apk-parser:1.0.2")
+    // implementation("com.github.AndroidDeveloperLB:apk-parser:6")
+    implementation(project(":modules:apk-parser"))
 
     // Prism4j
     implementation(files("$rootDir/libs/prism4j-2.0.0.jar"))
@@ -207,9 +218,9 @@ dependencies /* Unclassified */ {
     implementation(files("$rootDir/libs/tiny-sign-0.9.jar"))
 
     // Room
-    implementation("androidx.room:room-runtime:2.7.0")
-    implementation("androidx.room:room-ktx:2.7.0")
-    ksp("androidx.room:room-compiler:2.7.0")
+    implementation("androidx.room:room-runtime:2.7.1")
+    implementation("androidx.room:room-ktx:2.7.1")
+    ksp("androidx.room:room-compiler:2.7.1")
 
     // ApkSig
     // implementation("com.android.tools.build:apksig:8.7.3")
@@ -223,6 +234,15 @@ dependencies /* Unclassified */ {
     // MQTT
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0")
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+
+    // Jsoup
+    implementation("org.jsoup:jsoup:1.19.1")
+
+    // Material Date Time Picker
+    implementation(project(":modules:material-date-time-picker"))
+
+    // ICU4J
+    implementation("com.ibm.icu:icu4j:77.1")
 }
 
 dependencies /* MIME */ {
@@ -276,16 +296,18 @@ dependencies /* Material Dialogs */ {
     // TODO by SuperMonster003 on Feb 5, 2022.
     //  ! Upgrade to 3.3.0 (more difficult than expected).
     //  ! zh-CN: 升级至 3.3.0 (实际难度超出预期较多).
-    val configuration: (ExternalModuleDependency).() -> Unit = {
-        version {
-            prefer("0.9.6.0")
-            because("Not ready to update to version 3.3.0 yet")
-        }
-    }
-    configuration.let { cfg ->
-        implementation("com.afollestad.material-dialogs:core", cfg)
-        implementation("com.afollestad.material-dialogs:commons", cfg)
-    }
+    //  # val configuration: (ExternalModuleDependency).() -> Unit = {
+    //  #     version {
+    //  #         prefer("0.9.6.0")
+    //  #         because("Not ready to update to version 3.3.0 yet")
+    //  #     }
+    //  # }
+    //  # configuration.let { cfg ->
+    //  #     implementation("com.afollestad.material-dialogs:core", cfg)
+    //  #     implementation("com.afollestad.material-dialogs:commons", cfg)
+    //  # }
+    implementation(project(":modules:material-dialogs"))
+    implementation("me.zhanghai.android.materialprogressbar:library:1.4.2")
 }
 
 dependencies /* Layout */ {
@@ -610,6 +632,7 @@ android {
             "junit/**/*",
             "LICENSE-junit.txt",
             "spec.txt",
+            "EmojiReference.txt",
         ).let { resources.excludes.addAll(it) }
 
         if (gradle.startParameter.taskNames.any { it.contains(flavorNameInrt, true) }) {
@@ -719,7 +742,7 @@ android {
         // Configures multiple APKs based on ABI.
         abi {
             // Enables building multiple APKs per ABI.
-            isEnable = /* isNotAssembleInrt */ !gradle.startParameter.taskNames.any {
+            isEnable = /* isNotAssembleInrt */ gradle.startParameter.taskNames.none {
                 it.contains(Regex("^(:?$flavorNameApp:)?$buildActionAssemble$flavorNameInrt", IGNORE_CASE))
             }
             // By default, all ABIs are included, so use reset() and include to specify that we only
@@ -834,41 +857,50 @@ class Versions(filePath: String) {
     private var javaVersionInfoSuffix = ""
 
     val javaVersion: JavaVersion by lazy {
-        var niceVersionInt = javaVersionRaw.toInt()
-        var isFallback = false
+        var javaVersionInt = determineJavaVersion()
+        gradle.beforeProject {
+            extensions.extraProperties["javaVersion"] = javaVersionInt
+        }
+        JavaVersion.toVersion(javaVersionInt)
+    }
 
-        while (niceVersionInt > javaVersionMinSupported) {
-            if (JvmTarget.values().any { it.name.contains(Regex("_$niceVersionInt$")) }) {
+    private fun determineJavaVersion(): Int {
+        if (gradle.extra.has("javaVersionOverriddenByUser")) {
+            (gradle.extra.get("javaVersionOverriddenByUser") as? Int)?.let {
+                javaVersionInfoSuffix += " [user-specified]"
+                return it
+            }
+        }
+
+        var versionInt = javaVersionRaw.toInt()
+        var isJvmCoercive = false
+
+        while (versionInt > javaVersionMinSupported) {
+            if (JvmTarget.values().any { it.name.contains(Regex("_$versionInt$")) }) {
                 break
             }
-            niceVersionInt -= 1
-            isFallback = true
+            versionInt -= 1
+            isJvmCoercive = true
         }
 
-        if (isFallback) {
-            javaVersionInfoSuffix += " [fallback]"
+        if (isJvmCoercive) {
+            javaVersionInfoSuffix += " [coercive-jvm-downgraded]"
         }
 
-        if (gradle.extra.has("gradleVersionToCoerceJavaVersion")) {
-            (gradle.extra["gradleVersionToCoerceJavaVersion"] as? String)?.let {
-                val maxGradleVersion = getMaxSupportedJavaVersion(it)
-                if (niceVersionInt > maxGradleVersion) {
-                    niceVersionInt = maxGradleVersion
-                    javaVersionInfoSuffix += " [coerced]"
+        if (versionInt > currentVersionInt) {
+            versionInt = currentVersionInt
+            javaVersionInfoSuffix += " [consistent-downgraded]"
+        }
+
+        if (gradle.extra.has("javaVersionCoercedByGradle")) {
+            (gradle.extra["javaVersionCoercedByGradle"] as? Int)?.let {
+                if (versionInt > it) {
+                    versionInt = it
+                    javaVersionInfoSuffix += " [coercive-gradle-downgraded]"
                 }
             }
         }
-
-        if (niceVersionInt > currentVersionInt) {
-            niceVersionInt = currentVersionInt
-            javaVersionInfoSuffix += " [consistent]"
-        }
-
-        gradle.beforeProject {
-            extensions.extraProperties["javaVersion"] = niceVersionInt
-        }
-
-        JavaVersion.toVersion(niceVersionInt)
+        return versionInt
     }
 
     private var isBuildNumberAutoIncremented = false
@@ -942,56 +974,16 @@ class Versions(filePath: String) {
 
     private fun updateProperties() {
         if (isBuildGapEnough) {
-            properties["VERSION_BUILD"] = "${appVersionCode + 1}"
-            isBuildNumberAutoIncremented = true
+            val isBuildAppRelease = gradle.startParameter.taskNames.any {
+                it.contains(Regex("^(:?$flavorNameApp:)?$buildActionAssemble($flavorNameApp|$flavorNameInrt)$buildTypeRelease", IGNORE_CASE))
+            }
+            if (!isBuildAppRelease) {
+                properties["VERSION_BUILD"] = "${appVersionCode + 1}"
+                isBuildNumberAutoIncremented = true
+            }
         }
         properties["BUILD_TIME"] = "${Date().time}"
         properties.store(file.writer(), null)
-    }
-
-    private fun getMaxSupportedJavaVersion(gradleVersion: String): Int {
-
-        /* https://docs.gradle.org/current/userguide/compatibility.html . */
-        val presetVersionMap = listOf(
-            17 to "7.3",
-            18 to "7.5",
-            19 to "7.6",
-            20 to "8.3",
-            21 to "8.5",
-            22 to "8.8",
-            23 to "8.10",
-            24 to "8.11", /* Unofficial as of Mar 19, 2025. */
-        )
-
-        fun parseVersion(version: String) = version.split(Regex("[.-]")).map { it.toIntOrNull() ?: 0 }
-
-        val inputGradleVersionInts = parseVersion(gradleVersion)
-
-        var maxJavaVersion: Int = presetVersionMap.first().first
-
-        for ((presetJavaVersion, presetGradleVersion) in presetVersionMap) {
-            val presetGradleVersionInts: List<Int> = parseVersion(presetGradleVersion)
-
-            for (i in presetGradleVersionInts.indices) {
-                when {
-                    i > inputGradleVersionInts.lastIndex -> {
-                        break
-                    }
-                    inputGradleVersionInts[i] > presetGradleVersionInts[i] -> {
-                        maxJavaVersion = presetJavaVersion
-                        break
-                    }
-                    inputGradleVersionInts[i] < presetGradleVersionInts[i] -> {
-                        break
-                    }
-                    i == presetGradleVersionInts.lastIndex -> {
-                        maxJavaVersion = presetJavaVersion
-                    }
-                }
-            }
-        }
-
-        return maxJavaVersion
     }
 
 }

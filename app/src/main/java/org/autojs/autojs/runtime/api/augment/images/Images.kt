@@ -3,7 +3,10 @@ package org.autojs.autojs.runtime.api.augment.images
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Log
 import android.view.Gravity
+import androidx.core.net.toUri
 import org.autojs.autojs.annotation.RhinoRuntimeFunctionInterface
 import org.autojs.autojs.core.image.ColorDetector
 import org.autojs.autojs.core.image.ImageWrapper
@@ -17,6 +20,7 @@ import org.autojs.autojs.extension.ArrayExtensions.toNativeObject
 import org.autojs.autojs.extension.ScriptableExtensions.hasProp
 import org.autojs.autojs.extension.ScriptableExtensions.prop
 import org.autojs.autojs.extension.ScriptableObjectExtensions.inquire
+import org.autojs.autojs.extension.StringExtensions.isUri
 import org.autojs.autojs.runtime.ScriptRuntime
 import org.autojs.autojs.runtime.api.ImageFeatureMatching
 import org.autojs.autojs.runtime.api.ImageSimilarity
@@ -29,6 +33,8 @@ import org.autojs.autojs.runtime.api.augment.colors.Colors
 import org.autojs.autojs.runtime.api.augment.s13n.S13n
 import org.autojs.autojs.runtime.exception.ShouldNeverHappenException
 import org.autojs.autojs.runtime.exception.WrappedIllegalArgumentException
+import org.autojs.autojs.runtime.exception.WrappedRuntimeException
+import org.autojs.autojs.util.BitmapUtils
 import org.autojs.autojs.util.RhinoUtils.callFunction
 import org.autojs.autojs.util.RhinoUtils.coerceBoolean
 import org.autojs.autojs.util.RhinoUtils.coerceFloatNumber
@@ -43,18 +49,15 @@ import org.mozilla.javascript.BaseFunction
 import org.mozilla.javascript.NativeArray
 import org.mozilla.javascript.NativeObject
 import org.mozilla.javascript.ScriptableObject
+import org.opencv.core.CvType
 import org.opencv.features2d.DescriptorMatcher
 import org.opencv.imgproc.Imgproc
-import java.io.ByteArrayOutputStream
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.component3
-import kotlin.collections.contains
-import kotlin.math.floor
-import kotlin.math.ln
-import kotlin.math.pow
+import java.net.URL
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.round
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import android.graphics.Rect as AndroidRect
 import org.autojs.autojs.core.opencv.Mat as AutoJsMat
 import org.autojs.autojs.runtime.api.Images as ApiImages
@@ -96,7 +99,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
         ::bilateralFilter.name,
         ::cvtColor.name,
         ::findCircles.name,
-        ::resizeInternal.name,
+        ::resize.name,
         ::scale.name,
         ::rotate.name,
         ::flip.name,
@@ -130,6 +133,8 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
         ::isRecycled.name,
         ::recycle.name,
         ::compress.name,
+        ::compressToBytes.name,
+        ::downsample.name,
         ::getSize.name,
         ::getWidth.name,
         ::getHeight.name,
@@ -147,11 +152,16 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
     @Suppress("MayBeConstant")
     companion object {
 
+        private val TAG = Images::class.java.simpleName
+
         @JvmField
         val DEFAULT_COLOR_THRESHOLD = 4
 
         @JvmField
         val DEFAULT_IMAGE_SAVE_QUALITY = 100
+
+        @JvmField
+        val DEFAULT_IMAGE_COMPRESS_QUALITY = 60
 
         @JvmField
         val DEFAULT_IMAGE_TO_BYTES_QUALITY = 100
@@ -248,7 +258,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             }
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun requestScreenCapture(scriptRuntime: ScriptRuntime, args: Array<out Any?>): Boolean = ensureArgumentsAtMost(args, 2) { argList ->
@@ -270,7 +280,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             }
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun requestScreenCaptureAsync(scriptRuntime: ScriptRuntime, args: Array<out Any?>): NativeObject = ensureArgumentsAtMost(args, 2) { argList ->
@@ -280,14 +290,14 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             })) as NativeObject
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun stopScreenCapture(scriptRuntime: ScriptRuntime, args: Array<out Any?>) = ensureArgumentsIsEmpty(args) {
             scriptRuntime.images.stopScreenCapture()
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun getScreenCaptureOptions(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ScreenCapturer.Options? = ensureArgumentsIsEmpty(args) {
@@ -301,7 +311,12 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             val image = if (o is String) read(scriptRuntime, arrayOf<Any>(o, true)) else o
             require(image is ImageWrapper) { "Argument image for images.save must be a ImageWrapper" }
             require(!path.isJsNullish()) { "Argument path for images.save must be non-nullish" }
-            scriptRuntime.images.save(image, scriptRuntime.files.nonNullPath(coerceString(path)), parseImageFormat(format), parseQuality(quality, DEFAULT_IMAGE_SAVE_QUALITY))
+            scriptRuntime.images.save(
+                /* image = */ image,
+                /* path = */ scriptRuntime.files.nonNullPath(coerceString(path)),
+                /* format = */ parseImageFormat(format),
+                /* quality = */ parseQuality(quality, DEFAULT_IMAGE_SAVE_QUALITY),
+            )
         }
 
         @JvmStatic
@@ -311,7 +326,12 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             val image = if (o is String) read(scriptRuntime, arrayOf<Any>(o, true)) else o
             require(image is ImageWrapper) { "Argument image for images.saveImage must be a ImageWrapper" }
             require(!path.isJsNullish()) { "Argument path for images.saveImage must be non-nullish" }
-            scriptRuntime.images.save(image, scriptRuntime.files.nonNullPath(coerceString(path)), parseImageFormat(format), parseQuality(quality, DEFAULT_IMAGE_SAVE_QUALITY))
+            scriptRuntime.images.save(
+                /* image = */ image,
+                /* path = */ scriptRuntime.files.nonNullPath(coerceString(path)),
+                /* format = */ parseImageFormat(format),
+                /* quality = */ parseQuality(quality, DEFAULT_IMAGE_SAVE_QUALITY),
+            )
         }
 
         @JvmStatic
@@ -613,7 +633,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             initOpenCvIfNeeded()
             scriptRuntime.images.flip(image, horizontal, vertical)
         }
-        
+
         private fun parseFlipOrientations(o: Any?): Pair<Boolean, Boolean> = when {
             o.isJsNullish() -> false to false
             o is Boolean -> o to false
@@ -651,7 +671,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             val imageB = if (oB is String) read(scriptRuntime, arrayOf<Any>(oB, true)) else oB
             require(imageB is ImageWrapper) { "Argument imageB for images.concat must be a ImageWrapper" }
             initOpenCvIfNeeded()
-            ApiImages.concat(imageA, imageB, directionToGravityToConcat(direction))
+            ApiImages.concat(scriptRuntime, imageA, imageB, directionToGravityToConcat(direction))
         }
 
         @JvmStatic
@@ -677,13 +697,28 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             detectColor(scriptRuntime, it)
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on May 10, 2025.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun detectMultiColors(scriptRuntime: ScriptRuntime, args: Array<out Any?>): Boolean = ensureArgumentsLengthInRange(args, 5..6) {
-
-            TODO("detectMultiColors 尚未实现")
-
+            val (o, x, y, firstColor, paths, options) = it
+            val image = if (o is String) read(scriptRuntime, arrayOf<Any>(o, true)) else o
+            require(image is ImageWrapper) { "Argument image for images.detectMultiColors must be a ImageWrapper" }
+            require(paths is NativeArray) { "Argument paths for images.detectMultiColors must be a JavaScript Array" }
+            initOpenCvIfNeeded()
+            val opt = options as? NativeObject ?: newNativeObject()
+            scriptRuntime.images.colorFinder.detectMultiColors(
+                image,
+                coerceIntNumber(x),
+                coerceIntNumber(y),
+                Colors.toIntRhino(firstColor),
+                parseThreshold(opt).roundToInt(),
+                opt.inquire("region") { region -> buildRegionInternal(image, region) },
+                paths.flatMap { path ->
+                    val (px, py, color) = path as NativeArray
+                    listOf(coerceIntNumber(px), coerceIntNumber(py), Colors.toIntRhino(color))
+                }.toIntArray(),
+            )
         }
 
         @Deprecated("Deprecated in Java", ReplaceWith("detectMultiColors(image, x, y, firstColor, paths, options)"))
@@ -966,13 +1001,13 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
         fun matToImage(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ImageWrapper = ensureArgumentsOnlyOne(args) {
             initOpenCvIfNeeded()
             when (it) {
-                is AutoJsMat -> ImageWrapper.ofMat(it)
-                is OpencvMat -> ImageWrapper.ofMat(it)
+                is AutoJsMat -> ImageWrapper.ofMat(scriptRuntime, it)
+                is OpencvMat -> ImageWrapper.ofMat(scriptRuntime, it)
                 else -> throw WrappedIllegalArgumentException("Argument mat ${it.jsBrief()} is invalid for images.matToImage()")
             }
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun detectAndComputeFeatures(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ImageFeatures = ensureArgumentsLengthInRange(args, 1..2) {
@@ -987,7 +1022,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             ImageFeatures(result, opt.scale, rect)
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         @JvmStatic
         @RhinoRuntimeFunctionInterface
         fun matchFeatures(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ObjectFrame? = ensureArgumentsLengthInRange(args, 2..3) { argList ->
@@ -999,19 +1034,28 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             require(objectFeatures is ImageFeatures) {
                 "Argument objectFeatures ${objectFeatures.jsBrief()} for images.matchFeatures must be a ImageFeatures"
             }
-            val matcher = opt.inquire("matcher") {
-                coerceIntNumber(DescriptorMatcher::class.java.getField(coerceString(it)).get(null))
-            } ?: DescriptorMatcher.FLANNBASED
+            val isObjectOrbAlike = objectFeatures.javaObject.descriptors.type() == CvType.CV_8U
+            val matcherType = opt.inquire("matcher") {
+                DescriptorMatcher::class.java.getField(coerceString(it)).get(null) as? Int
+            } ?: when (isObjectOrbAlike) {
+                /* For ORB, BRISK, AKAZE, etc. */
+                true -> DescriptorMatcher.BRUTEFORCE_HAMMING
+                /* For SIFT, SURF, etc. */
+                else -> DescriptorMatcher.FLANNBASED
+            }
             val drawMatches = opt.inquire("drawMatches") { scriptRuntime.files.nonNullPath(coerceString(it)) }
-            val threshold = opt.inquire("threshold", ::coerceFloatNumber, 0.7f)
+            val threshold = opt.inquire("threshold", ::coerceFloatNumber, if (isObjectOrbAlike) 0.8f else 0.7f)
 
-            val result = ImageFeatureMatching.featureMatching(sceneFeatures.javaObject, objectFeatures.javaObject, matcher, drawMatches, threshold) ?: return@ensureArgumentsLengthInRange null
-
-            val javaMatchesImage = result.matches
-            val points = result.points
+            val result = ImageFeatureMatching.featureMatching(
+                /* sceneDesc = */ sceneFeatures.javaObject,
+                /* objectDesc = */ objectFeatures.javaObject,
+                /* matcherType = */ matcherType,
+                /* debugMatchesImagePath = */ drawMatches,
+                /* threshold = */ threshold,
+            ) ?: return@ensureArgumentsLengthInRange null
 
             if (!drawMatches.isJsNullish()) {
-                val matchesImage = javaMatchesImage?.let { matToImage(scriptRuntime, arrayOf(it)) }
+                val matchesImage = result.matches?.let { matToImage(scriptRuntime, arrayOf(it)) }
                 if (matchesImage != null) {
                     save(scriptRuntime, arrayOf(matchesImage, drawMatches, "jpg", 100))
                     matchesImage.recycle()
@@ -1020,17 +1064,16 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
 
             val region = sceneFeatures.region
             val scale = sceneFeatures.scale
-            val size = points.size
             val offsetX = region.x
             val offsetY = region.y
 
-            (0 until size).forEach { i ->
-                val point = points[i]
-                point.x = offsetX + point.x / scale
-                point.y = offsetY + point.y / scale
-            }
+            val quad = result.quad ?: return@ensureArgumentsLengthInRange null
+            require(quad.size == 4) { "Quad size of feature matching result must be 4 instead of ${quad.size}" }
 
-            ObjectFrame(points[0], points[1], points[3], points[2])
+            val (tl, tr, br, bl) = quad.map { p ->
+                OpencvPoint(p.x / scale + offsetX, p.y / scale + offsetY)
+            }
+            ObjectFrame(tl, tr, bl, br)
         }
 
         @JvmStatic
@@ -1047,18 +1090,71 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
 
         @JvmStatic
         @RhinoRuntimeFunctionInterface
-        fun compress(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ImageWrapper = ensureArgumentsLength(args, 2) {
-            val (o, compressLevelArg) = it
+        fun compress(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ImageWrapper = ensureArgumentsLengthInRange(args, 1..3) {
+
+            // @Comment by SuperMonster003 on May 19, 2025.
+            //  ! Option `inSampleSize` performs pixel downsampling during decoding
+            //  ! by discarding pixels to reduce resolution, rather than changing encoding quality.
+            //  ! zh-CN:
+            //  ! 选项 `inSampleSize` 在解码阶段做像素降采样,
+            //  ! 通过降低分辨率丢弃像素的方式来实现文件压缩, 而非改变编码质量.
+            //  !
+            //  # val (o, compressLevelArg) = it
+            //  # val image = if (o is String) read(scriptRuntime, arrayOf<Any>(o, true)) else o
+            //  # require(image is ImageWrapper) { "Argument image for images.compress must be a ImageWrapper" }
+            //  # val compressLevel = coerceNumber(compressLevelArg, 1.0)
+            //  # val level = 2.0.pow(floor(ln(compressLevel.coerceAtLeast(1.0)) / ln(2.0))).toInt()
+            //  # val outputStream = ByteArrayOutputStream()
+            //  # image.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            //  # val byteArray = outputStream.toByteArray()
+            //  # val options = BitmapFactory.Options().apply { inSampleSize = level }
+            //  # val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
+            //  # ImageWrapper.ofBitmap(bitmap).also { image.shoot() }
+
+            val (o, format, quality) = it
             val image = if (o is String) read(scriptRuntime, arrayOf<Any>(o, true)) else o
             require(image is ImageWrapper) { "Argument image for images.compress must be a ImageWrapper" }
-            val compressLevel = coerceNumber(compressLevelArg, 1.0)
-            val level = 2.0.pow(floor(ln(compressLevel.coerceAtLeast(1.0)) / ln(2.0))).toInt()
-            val outputStream = ByteArrayOutputStream()
-            image.bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            val byteArray = outputStream.toByteArray()
-            val options = BitmapFactory.Options().apply { inSampleSize = level }
-            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
-            ImageWrapper.ofBitmap(bitmap).also { image.shoot() }
+            scriptRuntime.images.compress(
+                /* image = */ image,
+                /* format = */ parseImageFormat(format),
+                /* quality = */ parseQuality(quality, DEFAULT_IMAGE_COMPRESS_QUALITY),
+            )
+        }
+
+        @JvmStatic
+        @RhinoRuntimeFunctionInterface
+        fun compressToBytes(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ByteArray = ensureArgumentsLengthInRange(args, 1..3) {
+            val (o, format, quality) = it
+            val image = if (o is String) read(scriptRuntime, arrayOf<Any>(o, true)) else o
+            require(image is ImageWrapper) { "Argument image for images.compressToBytes must be a ImageWrapper" }
+            scriptRuntime.images.compressToBytes(
+                /* image = */ image,
+                /* format = */ parseImageFormat(format),
+                /* quality = */ parseQuality(quality, DEFAULT_IMAGE_COMPRESS_QUALITY),
+            )
+        }
+
+        @JvmStatic
+        @RhinoRuntimeFunctionInterface
+        fun downsample(scriptRuntime: ScriptRuntime, args: Array<out Any?>): ImageWrapper = ensureArgumentsLengthInRange(args, 3..4) { argList ->
+            val (src, reqWidthArg, reqHeightArg, withAlphaArg) = argList
+            val reqWidth = coerceIntNumber(reqWidthArg)
+            val reqHeight = coerceIntNumber(reqHeightArg)
+            val withAlpha = coerceBoolean(withAlphaArg, true)
+            when (src) {
+                is ByteArray -> BitmapUtils.downsample(src, reqWidth, reqHeight, withAlpha)
+                is String -> when {
+                    src.isUri() -> BitmapUtils.downsample(scriptRuntime.uiHandler.applicationContext, src.toUri(), reqWidth, reqHeight, withAlpha)
+                    else -> BitmapUtils.downsample(scriptRuntime.files.nonNullPath(src), reqWidth, reqHeight, withAlpha)
+                }
+                is URL -> BitmapUtils.downsample(src, reqWidth, reqHeight, withAlpha)
+                is Uri -> BitmapUtils.downsample(scriptRuntime.uiHandler.applicationContext, src, reqWidth, reqHeight, withAlpha)
+                is Bitmap -> BitmapUtils.downsample(src, reqWidth, reqHeight, withAlpha)
+                is ImageWrapper -> BitmapUtils.downsample(src.bitmap, reqWidth, reqHeight, withAlpha).also { src.shoot() }
+                else -> throw WrappedIllegalArgumentException("Argument src ${src.jsBrief()} is invalid for images.downsample()")
+            }?.let {
+                ImageWrapper.ofBitmap(scriptRuntime, it)
+            } ?: throw WrappedRuntimeException("Failed to downsample image from ${src.jsBrief()}")
         }
 
         @JvmStatic
@@ -1304,8 +1400,11 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
 
         private fun parseImageFormat(o: Any?): String = when {
             o.isJsNullish() -> "png"
-            else -> when (val format = coerceString(o).lowercase()) {
+            else -> when (val format = coerceString(o).lowercase().trim()) {
+                "" -> "png"
                 "png", "jpg", "jpeg", "webp" -> format
+                "webp_lossless", "webp-lossless" -> format
+                "webp_lossy", "webp-lossy" -> format
                 else -> throw WrappedIllegalArgumentException("Unknown image format: $format")
             }
         }
@@ -1409,7 +1508,7 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             }
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         private fun getDetectFeatureMethod(method: Any?): Int = when (method) {
             is Number -> method.toInt()
             is String -> {
@@ -1422,12 +1521,9 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             else -> throw Error("Non-recognized method: $method")
         }
 
-        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19. 2023.
+        // @Reference to module __images__.js from Auto.js Pro 9.3.11 by SuperMonster003 on Dec 19, 2023.
         private fun fillDetectAndComputeFeaturesOptions(rows: Int, cols: Int, options: NativeObject): DetectAndComputeFeaturesOptions {
-            val scale = options.inquire("scale") { coerceFloatNumber(it) } ?: when {
-                rows * cols >= 1e6 -> 0.5f
-                else -> 1.0f
-            }
+            val scale = options.inquire("scale") { coerceFloatNumber(it) } ?: calcScale(rows, cols)
             val cvtColor = when {
                 options.inquire("grayscale", ::coerceBoolean, false) -> Imgproc.COLOR_RGBA2GRAY
                 else -> -1
@@ -1435,7 +1531,17 @@ class Images(scriptRuntime: ScriptRuntime) : Augmentable(scriptRuntime), AsEmitt
             val method = getDetectFeatureMethod(options.inquire("method", ::coerceString, "SIFT"))
             val region = buildRegionInternal(options.prop("region"), cols, rows)
 
-            return DetectAndComputeFeaturesOptions(scale, cvtColor, method, region)
+            return DetectAndComputeFeaturesOptions(scale.coerceIn(0f, 1f), cvtColor, method, region)
+        }
+
+        private fun calcScale(rows: Int, cols: Int, targetArea: Int = 1_000_000, maxSide: Int = 1600): Float {
+            val total = rows * cols
+            if (total < targetArea) return 1f
+            val scaleByArea = sqrt(targetArea.toDouble() / total).toFloat()
+            val scaleBySide = maxSide.toFloat() / max(rows, cols)
+            return min(scaleByArea, scaleBySide).also {
+                Log.d(TAG, "Calculated scale: $it")
+            }
         }
 
         private fun extractMatPair(scriptRuntime: ScriptRuntime, argList: Array<Any?>, funcName: String): Pair<OpencvMat, OpencvMat> {

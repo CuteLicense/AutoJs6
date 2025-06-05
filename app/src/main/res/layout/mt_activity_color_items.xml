@@ -13,13 +13,13 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBar"
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/MtAppTheme.AppBarOverlay"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            app:theme="@style/MtAppTheme.AppBarOverlay">
 
-            <androidx.appcompat.widget.Toolbar
+            <org.autojs.autojs.ui.widget.AdaptiveTitleToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"

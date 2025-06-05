@@ -36,6 +36,7 @@ import org.autojs.autojs.core.pref.Pref
 import org.autojs.autojs.event.BackPressedHandler
 import org.autojs.autojs.event.BackPressedHandler.DoublePressExit
 import org.autojs.autojs.event.BackPressedHandler.HostActivity
+import org.autojs.autojs.extension.ViewExtensions.setOnTitleViewLongClickListener
 import org.autojs.autojs.model.explorer.Explorers
 import org.autojs.autojs.permission.DisplayOverOtherAppsPermission
 import org.autojs.autojs.permission.ManageAllFilesPermission
@@ -125,7 +126,7 @@ class MainActivity : BaseActivity(), DelegateHost, HostActivity {
             val drawerLayout = it.drawerLayout
             setContentView(it.root)
             mViewPager = it.viewpager
-            mFab = it.fab.apply { ViewUtils.excludeFloatingActionButtonFromNavigationBar(this) }
+            mFab = it.fab.apply { ViewUtils.excludeFloatingActionButtonFromBottomNavigationBar(this) }
             mTab = it.tab
             mToolbar = it.toolbar
             addViewBackground(it.appBar)
@@ -178,7 +179,7 @@ class MainActivity : BaseActivity(), DelegateHost, HostActivity {
         val toolbar = mToolbar.also {
             setSupportActionBar(it)
             it.setTitle(R.string.app_name)
-            it.setOnLongClickListener { true.also { PreferencesActivity.launch(this) } }
+            it.setOnTitleViewLongClickListener { true.also { PreferencesActivity.launch(this) } }
         }
 
         mActionBarDrawerToggle = object : ActionBarDrawerToggle(
@@ -198,8 +199,8 @@ class MainActivity : BaseActivity(), DelegateHost, HostActivity {
                     //  ! zh-CN:
                     //  ! 此处改为中间值 (如 `slideOffset < 0.5`) 会带来更好的通知栏亮暗色转换视觉体验,
                     //  ! 但会造成抽屉视图滑动时出现些微卡顿.
-                    slideOffset < 1 -> setUpStatusBarAppearanceLightByThemeColor()
-                    else -> setUpStatusBarAppearanceLightByNightMode()
+                    slideOffset < 1 -> setUpStatusBarIconLightByThemeColor()
+                    else -> setUpStatusBarIconLightByNightMode()
                 }
             }
 
@@ -257,13 +258,13 @@ class MainActivity : BaseActivity(), DelegateHost, HostActivity {
         super.initThemeColors()
         setUpToolbarColors()
         setUpTabLayoutColors()
-        setUpStatusBarAppearanceLight()
+        setUpStatusBarIconLight()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            setUpStatusBarAppearanceLight()
+            setUpStatusBarIconLight()
         }
     }
 
@@ -293,12 +294,12 @@ class MainActivity : BaseActivity(), DelegateHost, HostActivity {
         mTab.setSelectedTabIndicatorColor(tabSelectedIndicatorColor)
     }
 
-    private fun setUpStatusBarAppearanceLight() {
+    private fun setUpStatusBarIconLight() {
         Handler(Looper.getMainLooper()).post {
             if (sIsActionBarDrawerOpened) {
-                setUpStatusBarAppearanceLightByNightMode()
+                setUpStatusBarIconLightByNightMode()
             } else {
-                setUpStatusBarAppearanceLightByThemeColor()
+                setUpStatusBarIconLightByThemeColor()
             }
         }
     }

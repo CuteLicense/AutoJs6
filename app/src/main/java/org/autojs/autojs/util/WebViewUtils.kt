@@ -18,6 +18,7 @@ import org.intellij.lang.annotations.Language
  */
 class WebViewUtils {
 
+    @Suppress("SameParameterValue")
     companion object {
 
         // @Hint by SuperMonster003 on Aug 26, 2022.
@@ -25,7 +26,7 @@ class WebViewUtils {
         //  ! - For Android API Level >= 29 (10) [Q]:
         //  !   - Android System WebView (or browsers like Google Chrome) version >= 76
         //  ! - For Android API Level <= 28 (9) [P]:
-        //  !   - Android System WebView (or browsers like Google Chrome) version >= 105
+        //  !   - Android System WebView (or similar Google Chrome browsers) version >= 105
         //  ! Reference: https://stackoverflow.com/questions/57449900/letting-webview-on-android-work-with-prefers-color-scheme-dark
         //  ! zh-CN:
         //  ! 当前特性需满足如下要求：
@@ -72,11 +73,41 @@ class WebViewUtils {
             excludeWebViewFromSystemBars(webViewWrapper, webView, excludeStatusBar = false, excludeNavigationBar = true)
         }
 
+        fun excludeWebViewFromNavigationBar(webViewWrapper: View, webView: WebView, excludeNavigationBarInjectCode: (systemBarInsetsBottom: Int) -> String) {
+            excludeWebViewFromSystemBars(webViewWrapper, webView, excludeStatusBar = false, excludeNavigationBarInjectCode = excludeNavigationBarInjectCode)
+        }
+
         fun excludeWebViewFromStatusBarAndNavigationBar(webViewWrapper: View, webView: WebView) {
             excludeWebViewFromSystemBars(webViewWrapper, webView, excludeStatusBar = true, excludeNavigationBar = true)
         }
 
-        @Suppress("SameParameterValue")
+        fun excludeWebViewFromStatusBarAndNavigationBar(webViewWrapper: View, webView: WebView, excludeNavigationBarInjectCode: (systemBarInsetsBottom: Int) -> String) {
+            excludeWebViewFromSystemBars(webViewWrapper, webView, excludeStatusBar = true, excludeNavigationBarInjectCode = excludeNavigationBarInjectCode)
+        }
+
+        private fun excludeWebViewFromSystemBars(webViewWrapper: View, webView: WebView, excludeStatusBar: Boolean, excludeNavigationBarInjectCode: (systemBarInsetsBottom: Int) -> String) {
+            var mSystemBarInsets: Insets? = null
+            ViewCompat.setOnApplyWindowInsetsListener(webViewWrapper) { v, insets ->
+                val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()).also {
+                    mSystemBarInsets = it
+                }
+                if (excludeStatusBar) {
+                    v.setPadding(0, systemBarInsets.top, 0, 0)
+                }
+                webView.setPadding(0, 0, 0, systemBarInsets.bottom)
+                insets
+            }
+            webView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    val systemBarInsets = mSystemBarInsets ?: return
+                    val webView = view ?: return
+                    val injectCode = excludeNavigationBarInjectCode(systemBarInsets.bottom)
+                    adjustBodyPaddingToAvoidNavOverlay(webView, injectCode)
+                }
+            }
+        }
+
         private fun excludeWebViewFromSystemBars(webViewWrapper: View, webView: WebView, excludeStatusBar: Boolean, excludeNavigationBar: Boolean) {
             var mSystemBarInsets: Insets? = null
             ViewCompat.setOnApplyWindowInsetsListener(webViewWrapper) { v, insets ->
@@ -97,20 +128,20 @@ class WebViewUtils {
                         super.onPageFinished(view, url)
                         val systemBarInsets = mSystemBarInsets ?: return
                         val webView = view ?: return
-                        adjustBodyPaddingToAvoidNavOverlay(webView, systemBarInsets)
+                        // @Hint by SuperMonster003 on Mar 12, 2025.
+                        //  ! Inject JavaScript code for document body with adding a bottom padding
+                        //  ! to ensure that content won't be covered by nav bar when scrolling to the end.
+                        //  ! zh-CN: 注入 JavaScript, 为 body 添加底部 padding, 确保滚动到底部时导航栏不遮挡内容.
+                        @Language("JavaScript")
+                        val defaultInjectCode = "document.body.style.paddingBottom = '${systemBarInsets.bottom}px'"
+                        adjustBodyPaddingToAvoidNavOverlay(webView, defaultInjectCode)
                     }
                 }
             }
         }
 
-        private fun adjustBodyPaddingToAvoidNavOverlay(webView: WebView, systemBarInsets: Insets) {
-            // @Hint by SuperMonster003 on Mar 12, 2025.
-            //  ! Inject JavaScript code for document body with adding a bottom padding
-            //  ! to ensure that content won't be covered by nav bar when scrolling to the end.
-            //  ! zh-CN: 注入 JavaScript, 为 body 添加底部 padding, 确保滚动到底部时导航栏不遮挡内容.
-            @Language("JavaScript")
-            val jsCode = """document.body.style.paddingBottom = "${systemBarInsets.bottom}px";"""
-            webView.evaluateJavascript(jsCode, null)
+        private fun adjustBodyPaddingToAvoidNavOverlay(webView: WebView, injectCode: String) {
+            webView.evaluateJavascript(injectCode, null)
         }
 
     }

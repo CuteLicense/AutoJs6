@@ -3,6 +3,7 @@
 package org.autojs.autojs.util
 
 import android.content.Intent
+import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import android.util.Log
@@ -17,6 +18,7 @@ import org.autojs.autojs.extension.ScriptableExtensions.prop
 import org.autojs.autojs.rhino.TopLevelScope
 import org.autojs.autojs.runtime.ScriptRuntime
 import org.autojs.autojs.runtime.exception.ScriptInterruptedException
+import org.autojs.autojs.runtime.exception.WrappedRuntimeException
 import org.autojs.autojs6.BuildConfig
 import org.mozilla.javascript.AbstractEcmaObjectOperations
 import org.mozilla.javascript.BaseFunction
@@ -176,9 +178,9 @@ object RhinoUtils {
             e.printStackTrace()
             when {
                 isMainThread() -> {
-                    scriptRuntime?.exit(e) ?: throw RuntimeException(e)
+                    scriptRuntime?.exit(e) ?: throw WrappedRuntimeException(e)
                 }
-                else -> throw RuntimeException(e)
+                else -> throw WrappedRuntimeException(e)
             }
         }
     }
@@ -325,6 +327,14 @@ object RhinoUtils {
 
     @JvmStatic
     fun isBackgroundThread() = !isMainThread()
+
+    @JvmStatic
+    fun dispatchToMainThread(r: Runnable) = dispatchToMainThread(Handler(Looper.getMainLooper()), r)
+
+    @JvmStatic
+    fun dispatchToMainThread(handler: Handler, r: Runnable) {
+        if (isMainThread()) r.run() else handler.post(r)
+    }
 
     @JvmStatic
     fun encodeURI(str: String): String = encodeURI(null, str)

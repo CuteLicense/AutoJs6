@@ -155,6 +155,81 @@
 
 ******
 
+# v6.6.4
+
+###### 2025/05/31
+
+* `تلميح` تغيير API: ui.(status/navigation)BarAppearanceLight[By] -> ui.(status/navigation)BarIconLight[By]
+* `إضافة جديدة` طرق util.dpToPx/spToPx/pxToDp/pxToSp لتحويل وحدات البكسل
+* `تصليح` مشكلة عرض العنوان الفرعي بشكل غير مكتمل عند تدوير الشاشة إلى الوضع الأفقي
+* `تصليح` مشكلة تغطية جزء من محتوى الصفحة بواسطة شريط التنقل الجانبي عند التدوير إلى الوضع الأفقي
+* `تصليح` منطقة تلوين خلفية شريط الحالة غير مكتملة في بعض الصفحات على Android 15 _[`issue #398`](http://issues.autojs6.com/398)_
+* `تصليح` قد يستخدم محرر الأكواد ترميزًا منخفض الثقة عند الكتابة مما يؤدي إلى أخطاء فك الترميز (محاولة إصلاح)
+* `تحسين` زيادة توافق التخطيط في صفحات التطبيق والمطور وإزالة تصنيفات التخطيط غير الضرورية
+* `تحسين` في README.md، قسم البناء، إضافة طرق متعددة لتسهيل تحديد صفحة إعداد الهدف _[`issue #404`](http://issues.autojs6.com/404)_
+* `تحسين` تعديلات على إصدارات بعض التبعيات أو المكتبات المحلية _[`CHANGELOG.md`](http://project.autojs6.com/blob/master/app/src/main/assets-app/doc/CHANGELOG.md#v664)_
+
+# v6.6.3
+
+###### 2025/05/27
+
+* `إضافة جديدة` ميزة سجل الإصدارات: عرض سجل التغييرات متعدد اللغات والإحصائيات
+* `إضافة جديدة` الدالة timers.keepAlive (أصبحت عالمية) للحفاظ على بقاء السكربت نشطًا
+* `إضافة جديدة` مستمعو الأحداث مثل engines.on('start/stop/error', callback) لأحداث المحرك العامة
+* `إضافة جديدة` الدالة images.detectMultiColors للتحقق من ألوان متعددة النقاط _[`issue #374`](http://issues.autojs6.com/374)_
+* `إضافة جديدة` الدوال images.matchFeatures/detectAndComputeFeatures: بحث صور بدقة كاملة (انظر [Auto.js Pro](https://g.pro.autojs.org/)) _[`issue #366`](http://issues.autojs6.com/366)_
+* `إضافة جديدة` الدالة images.compressToBytes لضغط الصورة وإنتاج مصفوفة بايتات
+* `إضافة جديدة` الدالة images.downsample لخفض الدقة وإنشاء ImageWrapper جديد
+* `إضافة جديدة` الدالة ui.keepScreenOn لإبقاء الشاشة مضاءة عند تركيز صفحة الواجهة
+* `إضافة جديدة` خاصية ui.root (getter) للحصول على عقدة "حاوية المحتوى الجذرية للنافذة" في تخطيط الواجهة
+* `إضافة جديدة` عنصر webview يدعم تخطيطات صفحات الويب عبر JsBridge (انظر [Auto.js Pro](https://g.pro.autojs.org/)) [مثال: Layout > Interactive HTML / Vue2 + Vant (SFC)] _[`issue #281`](http://issues.autojs6.com/281)_
+* `تصليح` قد يتم حجب بعض محتوى الوثائق عبر الإنترنت في تبويب Docs وصفحة الوثائق بواسطة شريط التنقل
+* `تصليح` في بعض الصفحات قد يؤدي النقر على أزرار شريط الأدوات إلى تفعيل حدث النقر على العنوان بالخطأ
+* `تصليح` السطور الفارغة في محرّر الشيفرة تظهر كرموز مربّعة على بعض الأجهزة
+* `تصليح` مربع حوار لوحة الألوان في إعداد لون السمة قد يتراكم بلا حدود
+* `تصليح` زر رفع الصوت لا يوقف جميع السكربتات عند تعطيل خدمة الوصول
+* `تصليح` تداخل لوحة المفاتيح عند تحرير بث مخصّص في صفحة المهام المجدولة
+* `تصليح` عناصر التحكم داخل webview لا تستطيع تفعيل لوحة المفاتيح البرمجية بشكل صحيح
+* `تصليح` قد يفشل مربع معلومات APK في جلب اسم التطبيق أو معلومات SDK
+* `تصليح` قد لا يتم تحميل محتوى المجلدات الفرعية تلقائيًا عند دخول مجلد مشروع في مثال مدير الملفات
+* `تصليح` تغطية المحتوى العلوي بشريط الحالة في وضع الواجهة على Android 15
+* `تصليح` لون خلفية شريط الحالة في بعض صفحات Android 15 لا يتبع لون السمة ديناميكيًا
+* `تصليح` وحدة dialogs لا تدعم الخاصية customView _[`issue #364`](http://issues.autojs6.com/364)_
+* `تصليح` قد لا يُرجع معامِل التعبير في dialogs.input نتيجة التنفيذ
+* `تصليح` استخدام JavaAdapter يسبب تجاوز مكدس ClassLoader _[`issue #376`](http://issues.autojs6.com/376)_
+* `تصليح` console.setContentTextColor يفقد اللون الافتراضي للنص _[`issue #346`](http://issues.autojs6.com/346)_
+* `تصليح` console.setContentBackgroundColor لا يقبل أسماء الألوان _[`issue #384`](http://issues.autojs6.com/384)_
+* `تصليح` تم تصحيح آلية images.compress: تغيّر جودة التشفير بدل خفض البكسلات
+* `تصليح` الدالة images.resize لا تعمل بشكل صحيح
+* `تصليح` engines.all قد يطلق ConcurrentModificationException _[`issue #394`](http://issues.autojs6.com/394)_
+* `تصليح` تنسيقات تاريخ غير صحيحة في بعض اللغات داخل README.md
+* `تصليح` قد تفشل عملية بناء Gradle بسبب طول غير صالح لأرشيف مكتبة _[`issue #389`](http://issues.autojs6.com/389)_
+* `تحسين` مصحح التخطيط يدعم إخفاء العناصر (بواسطة [TonyJiangWJ](https://github.com/TonyJiangWJ)) _[`pr #371`](http://pr.autojs6.com/371)_ _[`issue #355`](http://issues.autojs6.com/355)_
+* `تحسين` إضافة فواصل متدرّجة في قائمة مصحح التخطيط لتجميع الوظائف
+* `تحسين` يدعم project.json خيار permissions لمشاريع السكربتات (بواسطة [wirsnow](https://github.com/wirsnow)) _[`pr #391`](http://pr.autojs6.com/391)_ _[`issue #362`](http://issues.autojs6.com/362)_
+* `تحسين` عند حزم ملف واحد تُقرأ أذونات التطبيق المثبت وتُحدد تلقائيًا _[`issue #362`](http://issues.autojs6.com/362)_
+* `تحسين` توسيع نطاق تطبيق لون السمة ودعم المزيد من عناصر الواجهة
+* `تحسين` تكيّف عرض الدرج الرئيسي للشاشات الأفقية والعريضة جدًا
+* `تحسين` إضافة تخطيطات أفقية وصغيرة للصفحات «حول التطبيق» و«المطور»
+* `تحسين` حوار إعدادات يوفر خيار "استخدام القيمة الافتراضية"
+* `تحسين` زر الإجراء العائم في مدير الملفات يختفي تلقائيًا عند النقر خارجَه
+* `تحسين` مُنسّق الشيفرة يدعم العناصر `??` و `?.` و `??=`
+* `تحسين` يدعم محرّر الشيفرة قراءة وكتابة الملفات بترميزات GB18030 / UTF-16 (LE/BE) / Shift_JIS وغيرها
+* `تحسين` يدعم محرّر الشيفرة عرض معلومات تفصيلية عن الملف (المسار/الترميز/فاصل الأسطر/إجمالي البايتات والحروف، إلخ.) _[`issue #395`](http://issues.autojs6.com/395)_
+* `تحسين` إضافة رسائل خطأ لعمليات Intent (تحرير/عرض/تثبيت/إرسال/تشغيل وغيرها)
+* `تحسين` خاصية url في webview تدعم المسارات النسبية
+* `تحسين` وسيط path في ImageWrapper#saveTo يدعم المسارات النسبية
+* `تحسين` images.save يدعم ضغط ملفات PNG عند استخدام الوسيط quality _[`issue #367`](http://issues.autojs6.com/367)_
+* `تحسين` دعم مسح سجلات التحديثات المُتجاهَلة وعناوين وضع العميل
+* `تحسين` معلومات التحديث تعرض بعدة لغات متزامنة مع لغة الواجهة الحالية
+* `تحسين` التحميل غير المتزامن يحسّن سلاسة التمرير في قائمة مدير الملفات
+* `تحسين` تحسين محتوى وتنسيق رسائل استثناء السكربت في وحدة التحكم
+* `تحسين` أمثلة الشيفرة تدعم إعادة تعيين المجلد إلى محتواه الأصلي
+* `تحسين` زيادة كفاءة التحقق من توقيع APK
+* `تحسين` تحسين سرعة عرض وحالة معلومات حوارات ملفات APK/الوسائط
+* `تحسين` نص بناء Gradle أصبح أكثر قدرة على التكيّف مع الإصدارات الجديدة _[`discussion #369`](http://discussions.autojs6.com/369)_
+* `تحسين` تعديلات على إصدارات بعض التبعيات أو المكتبات المحلية _[`CHANGELOG.md`](http://project.autojs6.com/blob/master/app/src/main/assets-app/doc/CHANGELOG.md#v663)_
+
 # v6.6.2
 
 ###### 2025/04/16
@@ -175,6 +250,7 @@
 * `تصليح` المشكلة التي كان فيها floaty.window/floaty.rawWindow لا يمكن تنفيذها في الخيوط الثانوية
 * `تصليح` المشكلة التي كان فيها floaty.getClip قد لا يسترجع محتوى الحافظة بشكل صحيح _[`issue #341`](http://issues.autojs6.com/341)_
 * `تصليح` المشكلة التي كان فيها ناتج ui.inflate يفتقد إلى طرق البروتوتايب مثل attr و on و click
+* `تصليح` مشكلة يتم فيها ربط سياق النطاق بشكل غير صحيح عند استخدام صياغة XML لاستخدام تعبير JavaScript كقيمة لخاصية _[`issue #319`](http://issues.autojs6.com/319)_
 * `تصليح` المشكلة التي كانت فيها استثناءات بعض الطرق لا يتم التقاطها بواسطة كتلة try..catch _[`issue #345`](http://issues.autojs6.com/345)_
 * `تصليح` المشكلة التي كان فيها توليد الكود في صفحة تحليل التخطيطات قد يؤدي إلى تعطل التطبيق _[`issue #288`](http://issues.autojs6.com/288)_
 * `تصليح` المشكلة التي كان فيها التطبيقات المعبأة لا يمكنها استخدام وحدة shizuku بشكل صحيح _[`issue #227`](http://issues.autojs6.com/227)_ _[`issue #231`](http://issues.autojs6.com/231)_ _[`issue #284`](http://issues.autojs6.com/284)_ _[`issue #287`](http://issues.autojs6.com/287)_ _[`issue #304`](http://issues.autojs6.com/304)_
@@ -207,122 +283,6 @@
 * `تحسين` تحسين README.md لتوثيق أفضل لعملية بناء وتشغيل المشروع _[`issue #344`](http://issues.autojs6.com/344)_
 * `تحسين` تعديلات على إصدارات بعض التبعيات أو المكتبات المحلية _[`CHANGELOG.md`](http://project.autojs6.com/blob/master/app/src/main/assets-app/doc/CHANGELOG.md#v662)_
 
-# v6.6.1
-
-###### 2025/01/01
-
-* `إضافة جديدة` وحدة Pinyin لتحويل النصوص الصينية إلى بينيين (راجع وثائق المشروع > [البينيين الصيني](https://docs.autojs6.com/#/pinyin))
-* `إضافة جديدة` وحدة Pinyin4j لتحويل النصوص الصينية إلى بينيين (راجع وثائق المشروع > [البينيين الصيني](https://docs.autojs6.com/#/pinyin4j))
-* `إضافة جديدة` الطرق UiObject#isSimilar و UiObjectCollection#isSimilar لتحديد ما إذا كان العنصر أو مجموعة العناصر متشابهة
-* `إضافة جديدة` الطريقة العامة "currentComponent"، تُستخدم للحصول على اسم المكون النشط الحالي
-* `تصليح` مشكلة عدم قدرة المشروع على التجميع بشكل صحيح في بعض البيئات بسبب الرجوع إلى إصدار أقدم
-* `تصليح` خطأ "قيمة غير أولية" قد يحدث عند استدعاء طرق غير موجودة
-* `تصليح` مشكلة عدم إمكانية إضافة اختصارات النصوص على بعض الأجهزة (إصلاح مؤقت) _[`issue #221`](http://issues.autojs6.com/221)_
-* `تصليح` خطأ في قيود نوع الوسائط للطرق automator.click/longClick _[`issue #275`](http://issues.autojs6.com/275)_
-* `تصليح` مشكلة عدم دعم المصفوفات مع الوسائط من نوع ConsString _[`issue #277`](http://issues.autojs6.com/277)_
-* `تصليح` مشكلة فقدان الطرق والخصائص في مثيلات UiObjectCollection
-* `تحسين` تدعم صفحة التغليف إعداد التوقيعات وإدارة مستودعات المفاتيح وإعداد الأذونات (بواسطة [luckyloogn]()) _[`pr #286`]()_
-* `تحسين` تم تحسين دقة التعرف على اسم الحزمة الحالية واسم النشاط الحالي في النوافذ العائمة (الأولوية: Shizuku > Root > A11Y)
-* `تحسين` تم تحسين دقة التعرف على currentPackage و currentActivity (الأولوية: Shizuku > Root > A11Y)
-* `تحسين` استعادة إمكانية اختيار محتوى النص لكل عنصر في نافذة النشاط الخاصة بالسجلات بالنقر المزدوج أو الضغط المطول _[`issue #280`](http://issues.autojs6.com/280)_
-* `تحسين` استعادة أكبر قدر ممكن من المعلومات الأساسية لمشاريع النصوص عند تلف ملف project.json
-* `تحسين` تحويل اللغة الصينية المبسطة تلقائيًا إلى نظام بينيين (بما في ذلك الحروف متعددة النغمات) عند توليد اللواحق للأسماء في الملفات المفردة
-* `تحسين` دعم الوسائط السلبية في الطرق UiSelector#findOnce و UiSelector#find
-* `تحسين` تم تحسين تكيفية أساليب app.startActivity/startDualActivity
-* `تحسين` دعم أشكال مختصرة إضافية لبادئات الأسماء في المصفوفات المرتبطة بعناصر الواجهة (مثل RecyclerView و Snackbar وغيرها)
-* `تحسين` مزامنة أحدث كود من المصدر الرئيسي لمحرك Rhino وتكييفه مع المشروع الحالي
-* `تحسين` تعديلات على إصدارات بعض التبعيات أو المكتبات المحلية _[`CHANGELOG.md`](http://project.autojs6.com/blob/master/app/src/main/assets-app/doc/CHANGELOG.md#v661)_
-
-# v6.6.0
-
-###### 2024/12/02 - إعادة كتابة الوحدات المدمجة، الترقي بحذر
-
-* `تلميح` تمت إعادة كتابة الوحدات المدمجة باستخدام Kotlin لتحسين كفاءة تشغيل البرامج النصية ولكن قد يتطلب ذلك عدة تكرارات للتطوير بشكل تدريجي
-* `تلميح` ملف init.js المدمج هو فارغ بشكل افتراضي ولكنه يدعم توسيع الوحدات المدمجة أو تحميل وحدات خارجية بواسطة المطورين
-* `إضافة جديدة` وحدة axios / وحدة cheerio (راجع إلى [AutoX](https://github.com/kkevsekk1/AutoX))
-* `إضافة جديدة` وحدة sqlite، تُستخدم للعمليات البسيطة على قواعد بيانات SQLite (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/)) (ارجع إلى مستندات المشروع > [SQLite](https://docs.autojs6.com/#/sqlite))
-* `إضافة جديدة` وحدة mime، تُستخدم لمعالجة وتحليل سلاسل نوع MIME (ارجع إلى مستندات المشروع > [MIME](https://docs.autojs6.com/#/mime))
-* `إضافة جديدة` وحدة nanoid، يمكن استخدامها كمولد لسلاسل معرفات (راجع إلى [ai/nanoid](https://github.com/ai/nanoid))
-* `إضافة جديدة` وحدة sysprops، تُستخدم للحصول على بيانات تكوين بيئة التشغيل (ارجع إلى مستندات المشروع > [خصائص النظام](https://docs.autojs6.com/#/sysprops))
-* `إضافة جديدة` تدعم وحدة ocr محرك [Rapid OCR](https://github.com/RapidAI/RapidOCR)
-* `إضافة جديدة` دعم تحليل التخطيط لتبديل النوافذ (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طريقة auto.clearCache، تدعم مسح ذاكرة الكاش (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طريقة threads.pool، تدعم تطبيق بسيط للمؤشرات (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طريقة images.matchTemplate تضيف خيار useTransparentMask لدعم البحث الشفاف عن الصور (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طريقة images.requestScreenCaptureAsync، تُستخدم لطلب إذن لالتقاط الشاشة بشكل غير متزامن في وضع UI (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طريقة images.requestScreenCapture تضيف خيار isAsync لدعم الحصول على لقطة الشاشة بشكل غير متزامن (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طرق مراقبة الأحداث مثل images.on('screen_capture', callback)، تدعم مراقبة توافر لقطة الشاشة (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طريقة images.stopScreenCapture، تدعم تحرير الموارد المتعلقة بطلب لقطة الشاشة (راجع إلى [Auto.js Pro](https://g.pro.autojs.org/))
-* `إضافة جديدة` طرق images.psnr/mse/ssim/mssim/hist/ncc وimages.getSimilarity، تُستخدم للحصول على مقادير تشابه الصور
-* `إضافة جديدة` طريقة images.isGrayscale، لتحديد ما إذا كانت الصورة رمادية أم لا
-* `إضافة جديدة` طريقة images.invert، تُستخدم لعكس ألوان الصورة
-* `إضافة جديدة` طرق s13n.point/time، لتوحيد كائنات النقاط وكائنات الوقت (ارجع إلى مستندات المشروع > [التوحيد](https://docs.autojs6.com/#/s13n))
-* `إضافة جديدة` طرق وحدة console، مثل gravity (الجاذبية)، touchThrough (النقر عبر)، وbackgroundTint (تلوين الخلفية) (ارجع إلى مستندات المشروع > [وحدة التحكم](https://docs.autojs6.com/#/console))
-* `إضافة جديدة` طرائق Mathx.randomInt/Mathx.randomFloat، تستخدم لإرجاع عدد صحيح أو نقطة عشوائية ضمن النطاق المحدد
-* `إضافة جديدة` طرق app.launchDual/startDualActivity، تُستخدم للتعامل مع التطبيقات المزدوجة (تتطلب Shizuku أو Root) (تجريبي)
-* `إضافة جديدة` طريقة app.kill، تُستخدم لإيقاف التطبيق بالقوة (تتطلب Shizuku أو Root)
-* `إضافة جديدة` طريقة floaty.getClip، تُستخدم للحصول على محتوى الحافظة بشكل غير مباشر باستخدام نافذة عائمة
-* `تصليح` تسرب الذاكرة في الارتباط العرضي في الفئات الفرعية لFragment (مثل [DrawerFragment](https://github.com/SuperMonster003/AutoJs6/blob/17616504ab0bba93b30ab7abc67108ee5253f39a/app/src/main/java/org/autojs/autojs/ui/main/drawer/DrawerFragment.kt#L369) / [ExplorerFragment](https://github.com/SuperMonster003/AutoJs6/blob/17616504ab0bba93b30ab7abc67108ee5253f39a/app/src/main/java/org/autojs/autojs/ui/main/scripts/ExplorerFragment.kt#L48) إلخ)
-* `تصليح` تسرب الذاكرة في مثيلات الفئات مثل [ScreenCapture](https://github.com/SuperMonster003/AutoJs6/blob/17616504ab0bba93b30ab7abc67108ee5253f39a/app/src/main/java/org/autojs/autojs/core/image/capture/ScreenCapturer.java#L70) / [ThemeColorPreference](https://github.com/SuperMonster003/AutoJs6/blob/10960ddbee71f75ef80907ad5b6ab42f3e1bf31e/app/src/main/java/org/autojs/autojs/ui/settings/ThemeColorPreference.kt#L21) إلخ
-* `تصليح` مشكلة تسبب تعطل التطبيق عند طلب إذن لقطة الشاشة على Android 14 (by [chenguangming](https://github.com/chenguangming)) _[`pr #242`](http://pr.autojs6.com/242)_
-* `تصليح` مشكلة تسبب تعطل التطبيق عند تشغيل الخدمة الأمامية على Android 14
-* `تصليح` مشكلة بطئ إضاءة زر تشغيل محرر الأكواد على Android 14
-* `تصليح` مشكلة تؤدي إلى عدم القدرة على تشغيل التطبيق نتيجة نقص الملفات الأساسية بعد حزم المشروع _[`issue #202`](http://issues.autojs6.com/202)_ _[`issue #223`](http://issues.autojs6.com/223)_ _[`pr #264`](http://pr.autojs6.com/264)_
-* `تصليح` مشكلة تعطل التطبيق بسبب عدم وجود موارد الأيقونات المخصصة أثناء تحرير المشروع _[`issue #203`](http://issues.autojs6.com/203)_
-* `تصليح` عدم القدرة على استخدام المعلمات للحصول على لقطة الشاشة باتجاه معين أثناء طلب إذن لقطة الشاشة
-* `تصليح` مشكلة في بعض الأجهزة التي لا يمكنها إضافة اختصارات البرامج النصية بشكل سليم (محاولة إصلاح) _[`issue #221`](http://issues.autojs6.com/221)_
-* `تصليح` مشكلة تأخير تراكمي في إرسال الطلبات عند استدعاء الطرائق المتعلقة بوحدة http
-* `تصليح` مشكلة في عدم قدرة خدمة Shizuku على العمل بشكل صحيح قبل الدخول إلى النشاط الرئيسي لـ AutoJs6 (محاولة إصلاح) _[`issue #255`](http://issues.autojs6.com/255)_
-* `تصليح` مشكلة تجاوز النتيجة في طريقة random(min, max)
-* `تصليح` عدم القدرة على تمرير المعلمات من النوع الفارغ في طريقة pickup
-* `تصليح` مشكلة في تحريف الشكل الثابت للمعامل عند الحصول على المربعات باستخدام UiObject#bounds()
-* `تصليح` مشكلة عدم القدرة على تحليل النصوص التي تحتوي على علامات تنصيص نصف عريضة في العناصر text/button/input
-* `تصليح` مشكلة عدم فعالية وظيفة autoLink في عناصر text/textswitcher
-* `تصليح` مشكلة في مشاركة كائن ScriptRuntime بين السكريبتات المختلفة
-* `تصليح` فقدان الخواص الديناميكية للمتغيرات العامة HEIGHT وWIDTH
-* `تصليح` مشكلة في التأخير في بدء التحميل المفاجئ لـ RootShell أثناء بدء تشغيل البرنامج النصي
-* `تصليح` مشكلة في ضبط لون الخلفية التي تسبب فقدان الزوايا المستديرة للنافذة العائمة في وحدة التحكم
-* `تصليح` مشاكل تعطل الخدمة في التشغيل التلقائي لنظام التشغيل بدون حزمة كاملة (محاولة إصلاح)
-* `تصليح` مشكلة تبديل ViewPager عند التمرير الأفقي في WebView في صفحة المستندات الرئيسية
-* `تصليح` مشكلة عدم القدرة على تحديد الملفات ذات الامتداد الكبير في مدير الملفات
-* `تصليح` مشكلة عدم قدرة مدير الملفات على التعرف التلقائي على المشروع عند الدخول الأول إلى دليله
-* `تصليح` مشكلة عدم تحديث الصفحة تلقائيًا بعد حذف المجلد في مدير الملفات
-* `تصليح` مشكلة في ترتيب الملفات والمجلدات في مدير الملفات بسبب وضع اسم الحرف الأول في ASCII في نهاية القائمة
-* `تصليح` خطأ فشل التثبت في وظيفة تصحيح الأخطاء لمحرر الأكواد
-* `تصليح` مشكلة عدم القدرة على بدء التصحيح بعد إغلاق محرر الأكواد أثناء التصحيح
-* `تصليح` مشكلة تجاوز العناصر عند التنقل إلى نهاية السطر في محرر الأكواد
-* `تصليح` مشكلة وميض عند تشغيل صفحة السجلات في الصفحة الرئيسية للنشاط
-* `تصليح` عدم القدرة على استخدام وحدة opencc مع التطبيقات المعبأة بشكل صحيح
-* `تحسين` تحسين تجربة النقر على عنصر تحكم ABI غير متاح في صفحة التعبئة
-* `تحسين` دعم التحكم في تشغيل عرض مواقع المؤشر باستخدام Shizuku
-* `تحسين` دعم التحكم في تشغيل "إبراز وسائل الإعلام" و"تعديل إعدادات الأمان" باستخدام Shizuku
-* `تحسين` تدعم طرائق automator.gestureAsync/gesturesAsync معلمات دالة الاستدعاء
-* `تحسين` استخدام الوحدات النمطية كوحدة tasks لتنفيذ العمليات على قاعدة البيانات بطريقة متزامنة لتجنب التناقضات المحتملة في الوصول إلى البيانات
-* `تحسين` دعم وضع التشغيل البرمجي باستخدام فواصل الأنابيب (مثل `"ui|auto";` في البداية)
-* `تحسين` دعم وضع التشغيل البرمجي باستخدم الأقواس الفردية و`الخلفية بالتخطي`; وتقديم القدرة على إغفال الفواصل المنقوطة (مثل بدايةً `'ui';` أو `'ui'`)
-* `تحسين` دعم استيراد النماذج المدمجة مثل axios, cheerio, dayjs وغيرها من النماذج باستخدام معلم الأوضاع السريعة (مثل `"axios";` في البداية)
-* `تحسين` دعم استيراد وحدات JavaScript الداخلية باستخدام "x" أو "jsox" كمعلم الأوضاع السريعة (مثل `"x";` في البداية)
-* `تحسين` دعم مسارات محلية نسبية في خصائص عنصر img src و path (مثل `<img src="a.png"` />)
-* `تحسين` دعم التعرف الذكي على موقع الإدراج عند استيراد فئات وحزم Java في محرر الأكواد
-* `تحسين` دعم استخدام المسارات كمعلمات الصور مباشرة في وحدة images
-* `تحسين` دعم المعلمات في استيراد الحزم باستخدام importPackage
-* `تحسين` دعم التعرف الذكي على عناوين IP في وضع الخادم من الحافظة ودعم التحويل الذكي باستخدام مفتاح المسافة
-* `تحسين` دعم إنشاء الملفات برقم تسلسلي افتراضي ومناسب مع اختيار تلقائي للبادئة في مدير الملفات
-* `تحسين` توفر رسائل خطأ مفصلة عند تشغيل مشروع معين في مدير الملفات _[`issue #268`](http://issues.autojs6.com/268)_
-* `تحسين` دعم المزيد من أنواع الملفات ودعم عرض الرموز المقابلة (يدعم أكثر من 800 نوع من الملفات) في مدير الملفات
-* `تحسين` إضافة زر لتعديل أنواع الملفات القابلة للتحرير (jpg/doc/pdf...) في مدير الملفات
-* `تحسين` إضافة دعم لعرض المعلومات الأساسية وبيانات Manifest وقائمة الأذونات لملفات APK في مدير الملفات
-* `تحسين` دعم عرض المعلومات الأساسية وبيانات MediaInfo للملفات الوسائطية (الصوت والفيديو) في مدير الملفات
-* `تحسين` دعم إدخال اسم الحزمة القياسي تلقائيًا عند تعبئة ملف فردي وتقديم تحذيرات حول الشخصيات غير الصالحة
-* `تحسين` دعم إعداد الأيقونة وزيادة رقم الإصدار واسم الإصدار تلقائيًا بناءً على التطبيقات المثبتة من نفس اسم الحزمة عند تعبئة ملف فردي
-* `تحسين` دعم تحديد وحدات ABI والمكتبات الافتراضية المتضمنة باستخدام خيارات abis/libs في ملفات تكوين المشاريع التعبئة
-* `تحسين` دعم الرسائل التحذيرية عند تعذر فاعلية الخيارات المحددة لـ abis/libs في ملفات تكوين المشاريع التعبئة
-* `تحسين` استبعاد LeakCanary في إصدارات الإنتاج لتقليل الأعباء غير الضرورية
-* `تحسين` إضافة ترجمات باللغة الصينية للتعليقات الإنجليزية في الشيفرة المصدرية للمشروع لتحسين قابلية القراءة للتعليقات
-* `تحسين` دعم README وCHANGELOG للغات متعددة (توليد النصوص تلقائيًا)
-* `تحسين` تحسين التكيف الذاتي لإصدارات السكريبت الإنشائي لـ Gradle
-* `تحسين` تعديلات على إصدارات بعض التبعيات أو المكتبات المحلية _[`CHANGELOG.md`](http://project.autojs6.com/blob/master/app/src/main/assets-app/doc/CHANGELOG.md#v660)_
-
 ##### لمزيد من تاريخ الإصدارات، ارجع إلى
 
 * [CHANGELOG.md](http://project.autojs6.com/blob/master/app/src/main/assets-app/doc/CHANGELOG-ar.md)
@@ -339,12 +299,12 @@
 
 #### تحضير Android Studio
 
-قم بتنزيل إصدار `Android Studio Meerkat | 2024.3.1 Patch 1` (حدد أحدها حسب الحاجة):
+قم بتنزيل إصدار `Android Studio Meerkat Feature Drop | 2024.3.2 Patch 1` (حدد أحدها حسب الحاجة):
 
-- [android-studio-2024.3.1.14-windows.exe](https://redirector.gvt1.com/edgedl/android/studio/install/2024.3.1.14/android-studio-2024.3.1.14-windows.exe) (1.22 GB)
-- [android-studio-2024.3.1.14-windows.zip](https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2024.3.1.14/android-studio-2024.3.1.14-windows.zip) (1.23 GB)
+- [android-studio-2024.3.2.15-windows.exe](https://redirector.gvt1.com/edgedl/android/studio/install/2024.3.2.15/android-studio-2024.3.2.15-windows.exe) (1.23 GB)
+- [android-studio-2024.3.2.15-windows.zip](https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2024.3.2.15/android-studio-2024.3.2.15-windows.zip) (1.23 GB)
 
-> ملاحظة: تاريخ الإصدار بالنسخة المذكورة أعلاه هو 24 March 2025. إذا كنت بحاجة إلى تنزيل إصدار آخر، أو إذا كان الرابط المذكور غير صالح، يمكنك زيارة [أرشيف إصدارات Android Studio](https://developer.android.com/studio/archive?hl=en).
+> ملاحظة: تاريخ الإصدار بالنسخة المذكورة أعلاه هو 28 May 2025. إذا كنت بحاجة إلى تنزيل إصدار آخر، أو إذا كان الرابط المذكور غير صالح، يمكنك زيارة [أرشيف إصدارات Android Studio](https://developer.android.com/studio/archive?hl=en).
 
 قم بتثبيت أو فك ضغط الملف المذكور سابقًا، ثم قم بتشغيل برنامج Android Studio (مثل `"D:\android-studio\bin\studio64.exe"`).
 
@@ -352,12 +312,16 @@
 
 > ملاحظة: إذا كان نظام الكمبيوتر يحتوي بالفعل على Android SDK (مجموعة تطوير البرمجيات لنظام أندرويد)، فيمكنك تخطي هذا القسم.
 
-في برنامج Android Studio، استخدم الاختصار `CTRL + ALT + S` لفتح صفحة الإعدادات:
+افتح صفحة إعدادات `Android SDK (مجموعة تطوير برمجيات أندرويد)` (بأيٍّ من الطرق التالية):
 
 ```text
-Appearance & Behavior (الشكل العام والسلوك) -> 
-System Settings (إعدادات النظام) -> 
-Android SDK (مجموعة تطوير البرامج لنظام Android)
+Help (مساعدة) | Find action (بحث عن إجراء) # إدخال "Android SDK"
+[ أو ]
+File (ملف) | Settings (إعدادات) # بحث "Android SDK"
+[ أو ]
+File (ملف) | Settings (إعدادات) | Language & Frameworks (اللغات وأُطر العمل) | Android SDK (مجموعة تطوير البرامج لنظام Android)
+[ أو ]
+File (ملف) | Settings (إعدادات) | Appearance & Behavior (المظهر والسلوك) | System Settings (إعدادات النظام) | Android SDK (مجموعة تطوير البرامج لنظام Android)
 ```
 
 إذا كان حقل `موقع Android SDK (Android SDK Location)` فارغًا، يمكنك النقر على زر `تحرير (Edit)` على اليمين، والنقر على `التالي (Next)` عدة مرات في النافذة المنبثقة.
@@ -373,13 +337,16 @@ AutoJs6 يتطلب استخدام بعض أدوات SDK (مثل NDK وCMake).
 
 > ملاحظة: إذا كان النظام يحتوي بالفعل على جميع أدوات Android SDK المطلوبة لمشروع AutoJs6، فيمكنك تخطي هذا القسم.
 
-استخدام اختصار `CTRL + ALT + S` في برنامج Android Studio لفتح صفحة الإعدادات:
+افتح صفحة إعدادات `SDK Tools (أدوات SDK)` (بأيٍّ من الطرق التالية):
 
 ```text
-Appearance & Behavior (الشكل العام والسلوك) -> 
-System Settings (إعدادات النظام) -> 
-Android SDK (مجموعة تطوير البرامج لنظام Android) -> 
-SDK Tools  (أدوات SDK) (في النافذة اليمنى)
+Help (مساعدة) | Find action (بحث عن إجراء) # إدخال "SDK Tools"
+[ أو ]
+File (ملف) | Settings (إعدادات) # بحث "SDK Tools"
+[ أو ]
+File (ملف) | Settings (إعدادات) | Language & Frameworks (اللغات وأُطر العمل) | Android SDK (مجموعة تطوير البرامج لنظام Android) | SDK Tools  (أدوات SDK) (في النافذة اليمنى)
+[ أو ]
+File (ملف) | Settings (إعدادات) | Appearance & Behavior (المظهر والسلوك) | System Settings (إعدادات النظام) | Android SDK (مجموعة تطوير البرامج لنظام Android) | SDK Tools  (أدوات SDK) (في النافذة اليمنى) 
 ```
 
 حدد `إظهار تفاصيل الحزمة (Show Package Details)`، وقم بالنقر على NDK و CMake، وتأكد من تحديد الأدوات الخاصة بها ,تقع معلومات إصدار أدوات SDK في ملف `version.properties` في جذر مشروع AutoJs6.
@@ -388,18 +355,20 @@ SDK Tools  (أدوات SDK) (في النافذة اليمنى)
 
 يعتمد مشروع AutoJs6 على إصدار `JDK (مجموعة تطوير جافا)` بإصدار لا يقل عن `17`، ولكن يفضل الإصدار الذي لا يقل عن `19`.
 
-اعتبارًا من 16 April 2025، الإصدار الأقصى المدعوم من JDK لمشروع AutoJs6 هو `24`.
+اعتبارًا من 31 May 2025، الإصدار الأقصى المدعوم من JDK لمشروع AutoJs6 هو `24`.
 
 > ملاحظة: إذا كان نظام الكمبيوتر يحتوي على JDK والإصدار يفي بالمتطلبات المذكورة أعلاه، فيمكنك تخطي هذا القسم.
 
 يمكن تنزيل JDK مباشرةً باستخدام IDE، أو زيارة [موقع Oracle](https://www.oracle.com/java/technologies/downloads/) لتنزيله.
 
-استخدم اختصار `CTRL + ALT + S` في برنامج Android Studio لفتح صفحة الإعدادات:
+افتح صفحة إعدادات `Gradle JDK` (بأيٍّ من الطرق التالية):
 
 ```text
-Build, Execution, Deployment (البناء، التنفيذ، التوزيع) -> 
-Build Tools (أدوات البناء) -> 
-Gradle
+Help (مساعدة) | Find action (بحث عن إجراء) # إدخال "Gradle JDK"
+[ أو ]
+File (ملف) | Settings (إعدادات) # بحث "Gradle"
+[ أو ]
+File (ملف) | Settings (إعدادات) | Build, Execution, Deployment (البناء، التنفيذ، النشر) | Build Tools (أدوات البناء) | Gradle
 ```
 
 يمكنك اختيار أو إضافة إصدار JDK مختلف في حقل `Gradle JDK`.
@@ -447,11 +416,11 @@ Gradle
 حزم المشروع وإنشاء ملف APK يمكن تثبيته على أجهزة Android:
 
 - نسخة تجريبية (Debug Version)
-    - `Build (بناء)` -> `Build Bundle(s) / APK(s)` -> `Build APK(s)`
+    - `Build (بناء)` | `Build Bundle(s) / APK(s)` | `Build APK(s)`
     - توليد حزمة تثبيت الإصدار التجريبي مع التوقيع الافتراضي
     - مثال على المسار: `"D:\AutoJs6\app\build\outputs\apk\debug\"`
 - نسخة مطروحة (Release Version)
-    - `Build (بناء)` -> `Generate Signed Bundle / APK`
+    - `Build (بناء)` | `Generate Signed Bundle / APK`
     - اختيار خيار `APK`
     - قم بإعداد ملف التوقيع (تكوين جديد أو اختيار موجود)، وتوليد حزمة تثبيت الإصدار المطروح
     - مثال على المسار: `"D:\AutoJs6\app\release\"`
@@ -476,7 +445,7 @@ Gradle
 
 هذا يشير إلى أن ملف النموذج غير موجود. يجب تشغيل مهمة `inrt:assemble` يدويًا لإنشاء ملف النموذج، ثم إعادة البناء والنشر مرة أخرى.
 
-> ملحوظة: ملف النموذج مفقود؛ قم بتشغيل مهمة `inrt:assemble` يدويًا لإنشائه قبل إعادة البناء والنشر مرة أخرى
+> ملحوظة: عند حدوث تغييرات في كود المشروع الرئيسي ورغبتك في مزامنة هذه التغييرات مع التطبيق المعبأ، يتعين عليك إعادة تشغيل مهمة `inrt:assemble` لتوليد ملفات القالب وإعادة نشر التطبيق
 
 - AutoJs6 [app:bundle]
 
@@ -539,16 +508,17 @@ autojs6-v6.6.2-arm64-v8a-0f2a9d74.apk
 
 |         <span style="word-break:keep-all;white-space:nowrap">المساهمون</span>          |                   <span style="word-break:keep-all;white-space:nowrap">عدد الإرساليات</span>                    | <span style="word-break:keep-all;white-space:nowrap">أحدث الإرساليات</span> |
 |:-------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|
+|             <span style="word-break:keep-all;white-space:nowrap">[wirsnow](https://github.com/wirsnow)</span>             |         <span style="word-break:keep-all;white-space:nowrap">[1](https://github.com/SuperMonster003/AutoJs6/commits?author=wirsnow)</span>         |                    <span style="word-break:keep-all;white-space:nowrap">`2025/05/19`</span>                    |
+|         <span style="word-break:keep-all;white-space:nowrap">[TonyJiangWJ](https://github.com/TonyJiangWJ)</span>         |       <span style="word-break:keep-all;white-space:nowrap">[5](https://github.com/SuperMonster003/AutoJs6/commits?author=TonyJiangWJ)</span>       |                    <span style="word-break:keep-all;white-space:nowrap">`2025/04/24`</span>                    |
 |          <span style="word-break:keep-all;white-space:nowrap">[luckyloogn](https://github.com/luckyloogn)</span>          |       <span style="word-break:keep-all;white-space:nowrap">[3](https://github.com/SuperMonster003/AutoJs6/commits?author=luckyloogn)</span>        |                    <span style="word-break:keep-all;white-space:nowrap">`2025/01/01`</span>                    |
 |                <span style="word-break:keep-all;white-space:nowrap">[kvii](https://github.com/kvii)</span>                |          <span style="word-break:keep-all;white-space:nowrap">[1](https://github.com/SuperMonster003/AutoJs6/commits?author=kvii)</span>           |                    <span style="word-break:keep-all;white-space:nowrap">`2024/10/16`</span>                    |
 |   <span style="word-break:keep-all;white-space:nowrap">[chenguangming](https://github.com/chenguangming) `(Tom)`</span>   | <span style="word-break:keep-all;white-space:nowrap">[2](https://github.com/SuperMonster003/AutoJs6/pulls?q=is%3Apr+author%3Achenguangming)</span> |                    <span style="word-break:keep-all;white-space:nowrap">`2024/05/14`</span>                    |
 |          <span style="word-break:keep-all;white-space:nowrap">[LZX284](https://github.com/LZX284) `(AI)`</span>           |         <span style="word-break:keep-all;white-space:nowrap">[17](https://github.com/SuperMonster003/AutoJs6/commits?author=LZX284)</span>         |                    <span style="word-break:keep-all;white-space:nowrap">`2023/11/19`</span>                    |
-|         <span style="word-break:keep-all;white-space:nowrap">[TonyJiangWJ](https://github.com/TonyJiangWJ)</span>         |       <span style="word-break:keep-all;white-space:nowrap">[4](https://github.com/SuperMonster003/AutoJs6/commits?author=TonyJiangWJ)</span>       |                    <span style="word-break:keep-all;white-space:nowrap">`2023/10/31`</span>                    |
 | <span style="word-break:keep-all;white-space:nowrap">[little&#x2011;alei](https://github.com/little-alei) `(抠脚本人)`</span> |      <span style="word-break:keep-all;white-space:nowrap">[12](https://github.com/SuperMonster003/AutoJs6/commits?author=little-alei)</span>       |                    <span style="word-break:keep-all;white-space:nowrap">`2023/07/12`</span>                    |
 |              <span style="word-break:keep-all;white-space:nowrap">[aiselp](https://github.com/aiselp)</span>              |    <span style="word-break:keep-all;white-space:nowrap">[6](https://github.com/SuperMonster003/AutoJs6/pulls?q=is%3Apr+author%3Aaiselp)</span>     |                    <span style="word-break:keep-all;white-space:nowrap">`2023/06/14`</span>                    |
 |           <span style="word-break:keep-all;white-space:nowrap">[LYS86](https://github.com/LYS86) `(Lin)`</span>           |          <span style="word-break:keep-all;white-space:nowrap">[2](https://github.com/SuperMonster003/AutoJs6/commits?author=LYS86)</span>          |                    <span style="word-break:keep-all;white-space:nowrap">`2023/06/03`</span>                    |
 
-تم تحديث البيانات في 1 January 2025.
+تم تحديث البيانات في 27 May 2025.
 
 تم تصنيف سجلات البيانات بترتيب تنازلي حسب `أحدث الإرساليات`.
 
@@ -560,24 +530,29 @@ autojs6-v6.6.2-arm64-v8a-0f2a9d74.apk
     # --------------------------------------------------------------#
     # Before committing and pushing to the remote GitHub repository #
     # --------------------------------------------------------------#
-    - CHANGELOG.md
-        - Update entries for AutoJs6 by checking all changed files
-        - Update entries for Gradle plugins [ implementation ]
-        - Update version name and released date
-        - Append related GitHub issues to changelog entries
-    - README.md
+    - IDE
         - The summary of the latest changelog for committing to Git [ DO NOT commit or push ]
+    - $projectDir/version.properties
+        - Remove the part like [ alpha / beta / ... ] of VERSION_NAME
+    - $projectDir/.changelog/lang_zh-Hans.json
+        - Update version name and released date
+        - Translate into other languages
+        - Update TypeScript declarations according to section `dependency` if needed
+    - $projectDir/.readme/template_readme.md
         - Update badges like [ android studio / rhino / ... ]
+        - Update contribution section: المشاركة بالإسهام
+    - $projectDir/.readme/common.json
         - Update android studio download links and version names
-        - Update contribution section
-    - Remove the part like [ alpha / beta / ... ] of VERSION_NAME in version.properties
-    - Update dependencies TypeScript declarations if needed.
-    - Re-generate documentation/markdown by running the python script
-    - Check the two-way versions for AutoJs6 and VSCode ext, then publish the ext to Microsoft
-    - Run Gradle task "app:assembleInrtRelease"
-    - Build APK to determine the final VERSION_BUILD field
-    - Run Gradle task "app:appendDigestToReleasedFiles"
-    - Check VERSION_BUILD in version.properties with released apks
-    - Commit and push to GitHub
-    - Publish the latest release with signed APKs
+        - Update contribution section: var_date_contribution_table_data_updated
+    - $projectDir/.python/generate_markdown.py
+        - Re-generate markdown by running the python script [ link: aj6mdgen ]
+    - Others
+        - Re-generate documentation by running the python script [ link: aj6docgen ]
+        - Check the two-way versions for AutoJs6 and VSCode ext, then publish the ext to Microsoft if needed
+        - Run Gradle task "app:assembleInrtRelease" [ shortcut: C+A+0#- ]
+        - Build APK to determine the final VERSION_BUILD field [ shortcut: C+A+0#A ]
+        - Run Gradle task "app:appendDigestToReleasedFiles" [ shortcut: C+A+0#= ]
+        - Check VERSION_BUILD in version.properties with released apks
+        - Commit and push to GitHub
+        - Publish the latest release with signed APKs
 )
